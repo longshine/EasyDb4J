@@ -19,6 +19,7 @@ public class Column {
 	private String defaultValue;
 	private String checkConstraint;
 	private String sqlType;
+	private boolean updatable = true;
 	
 	public Column(String columnName, String fieldName, int dbType) {
 		this.name = columnName;
@@ -125,4 +126,12 @@ public class Column {
 	public String getSqlType(Dialect dialect) {
         return sqlType == null ? dialect.getTypeName(dbType, length, precision, scale) : sqlType;
     }
+
+	public boolean isUpdatable() {
+		return updatable;
+	}
+
+	public void setUpdatable(boolean updatable) {
+		this.updatable = updatable;
+	}
 }

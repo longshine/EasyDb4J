@@ -304,14 +304,16 @@ public class Table implements IRelationalModel {
 			if (append)
 				sbSql.append(", ");
 			Column column = (Column) it.next();
-			if (hasPrimaryKey() && getPrimaryKey().containsColumn(column))
+			if (hasPrimaryKey() && getPrimaryKey().containsColumn(column)) {
 				append = false;
-			else {
+			} else if (!column.isUpdatable()) {
+				append = false;
+			} else {
 				sbSql.append(column.getQuotedName(dialect))
-	            	.append(" = ").append(dialect.paramPrefix());
-	                //.append(column.getFieldName());
+					.append(" = ").append(dialect.paramPrefix());
+					//.append(column.getFieldName());
 				paramList.add(column);
-	            append = true;
+				append = true;
 			}
 		}
 		
