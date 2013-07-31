@@ -1,6 +1,5 @@
 package lx.easydb.dialect;
 
-import lx.easydb.StringHelper;
 import lx.easydb.Types;
 import lx.easydb.dialect.function.AnsiTrimEmulationFunction;
 import lx.easydb.dialect.function.SQLFunctionTemplate;
@@ -39,33 +38,46 @@ public class SQLServerDialect extends AbstractTransactSQLDialect {
 		return '[';
 	}
 	
-	public String getPaging(String sql, String order, int total, int offset) {
+	public String getPaging(String sql, String order, int limit, int offset) {
 		if (offset > 0) {
+			if (order == null || order.length() == 0)
+				throw new IllegalArgumentException("An order should be specified for paging query.");
+			sql = new StringBuffer(sql.length() + order.length() + 9)
+				.append(sql)
+				.append(" ").append(order)
+				.insert(getAfterSelectInsertPoint(sql), " top " + (limit + offset))
+				.toString();
 			String anotherOrderby = order.toUpperCase();
-			// FIXME method replace is in java 1.5
-			if (anotherOrderby.contains(" DESC"))
-	            anotherOrderby = anotherOrderby.replace(" DESC", " ASC");
-	        else if (anotherOrderby.contains(" ASC"))
-	            anotherOrderby = anotherOrderby.replace(" ASC", " DESC");
+			if (anotherOrderby.indexOf(" DESC") > -1)
+				anotherOrderby = anotherOrderby.replaceFirst(" DESC", " ASC");
+	        else if (anotherOrderby.indexOf(" ASC") > -1)
+	            anotherOrderby = anotherOrderby.replaceFirst(" ASC", " DESC");
 	        else
 	            anotherOrderby += " DESC";
-			StringBuffer sb = StringHelper.createBuilder();
-			sb.append("SELECT * FROM (SELECT top ");
-			sb.append(total);
-			sb.append(" * FROM (SELECT top ");
-			sb.append(total + offset);
-			sb.append(" * FROM (");
-			sb.append(sql);
-			sb.append(") t1 ");
-			sb.append(order);
-			sb.append(") t2 ");
-			sb.append(anotherOrderby);
-			sb.append(") t3 ");
-			sb.append(order);
-			return sb.toString();
+			// NOTE This may not work properly when the total count of records < (limit + offset)
+			return new StringBuffer("SELECT * FROM (SELECT top ")
+				.append(limit)
+				.append(" * FROM (")
+				.append(sql)
+				.append(") t1 ")
+				.append(anotherOrderby)
+				.append(") t2 ")
+				.append(order)
+				.toString();
+		} else {
+			StringBuffer sb = new StringBuffer(sql.length() + (order == null ? 0 : order.length()) + 9)
+				.append(sql);
+			if (order != null && order.length() > 0)
+				sb.append(" ").append(order);
+			return sb.insert(getAfterSelectInsertPoint(sql), " top " + limit)
+				.toString();
 		}
-		else {
-			return "SELECT TOP " + total + sql.substring(6);
-		}
+	}
+	
+	static int getAfterSelectInsertPoint(String sql) {
+		sql = sql.toLowerCase();
+		int selectIndex = sql.indexOf("select");
+		final int selectDistinctIndex = sql.indexOf("select distinct");
+		return selectIndex + (selectDistinctIndex == selectIndex ? 15 : 6);
 	}
 }

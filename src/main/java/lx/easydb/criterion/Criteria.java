@@ -87,10 +87,10 @@ public class Criteria implements ICriteria, ICriteriaRender {
 		params.clear();
         String sql = generateSelect();
         String orderby = generateOrder();
-        if (orderby != null)
-            sql += orderby;
         if (total >= 0)
             sql = factory.getDialect().getPaging(sql, orderby, total, offset);
+        else if (orderby != null)
+            sql += " " + orderby;
         //System.out.println(sql);
         return sql;
     }
@@ -129,7 +129,7 @@ public class Criteria implements ICriteria, ICriteriaRender {
 	
 	private String generateOrder() {
         if (orders.size() > 0) {
-        	StringBuffer sb = StringHelper.createBuilder().append(" order by ");
+        	StringBuffer sb = StringHelper.createBuilder().append("order by ");
         	boolean append = false;
         	Iterator it = orders.iterator();
         	while (it.hasNext()) {

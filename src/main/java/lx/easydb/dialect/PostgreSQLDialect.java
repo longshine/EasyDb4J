@@ -4,7 +4,6 @@ import java.util.List;
 
 import lx.easydb.IConnectionFactory;
 import lx.easydb.QueryException;
-import lx.easydb.StringHelper;
 import lx.easydb.Types;
 import lx.easydb.dialect.function.ISQLFunction;
 import lx.easydb.dialect.function.NoArgSQLFunction;
@@ -136,9 +135,10 @@ public class PostgreSQLDialect extends Dialect {
 	}
 	
 	public String getPaging(String sql, String order, int total, int offset) {
-		StringBuffer sb = StringHelper.createBuilder()
-			.append(sql)
-			.append(" LIMIT ")
+		StringBuffer sb = new StringBuffer(sql);
+		if (order != null && order.length() > 0)
+			sb.append(" ").append(order);
+		sb.append(" LIMIT ")
 			.append(total);
 		if (offset > 0) {
 			sb.append(" OFFSET ");
