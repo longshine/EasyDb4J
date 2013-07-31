@@ -1,0 +1,36 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>lx.easydb</groupId>
+  <artifactId>easydb</artifactId>
+  <version>0.3</version>
+  <packaging>jar</packaging>
+  <name>EasyDb</name>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  <developers>
+    <developer>
+      <id>longshine</id>
+      <name>Longxiang He</name>
+      <roles>
+        <role>creator</role>
+        <role>architect</role>
+        <role>developer</role>
+      </roles>
+    </developer>
+  </developers>
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.8.1</version>
+      <scope>test</scope>
+    </dependency>
+  	<dependency>
+  	  <groupId>c3p0</groupId>
+  	  <artifactId>c3p0</artifactId>
+  	  <version>0.9.1</version>
+  	</dependency>
+  </dependencies>
+</project>
