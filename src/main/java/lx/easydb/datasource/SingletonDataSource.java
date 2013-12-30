@@ -254,8 +254,29 @@ public class SingletonDataSource extends DataSource {
 			return this.conn.isWrapperFor(arg0);
 		}
 
-		public Object unwrap(Class arg0) throws SQLException {
-			return this.conn.unwrap(arg0);
+		public void setSchema(String schema) throws SQLException {
+			conn.setSchema(schema);
+		}
+
+		public String getSchema() throws SQLException {
+			return conn.getSchema();
+		}
+
+		public void abort(java.util.concurrent.Executor executor) throws SQLException {
+			conn.abort(executor);
+		}
+
+		public void setNetworkTimeout(java.util.concurrent.Executor executor, int milliseconds)
+				throws SQLException {
+			conn.setNetworkTimeout(executor, milliseconds);
+		}
+
+		public int getNetworkTimeout() throws SQLException {
+			return conn.getNetworkTimeout();
+		}
+
+		public Object unwrap(Class iface) throws SQLException {
+			return conn.unwrap(iface);
 		}
 	}
 }

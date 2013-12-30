@@ -587,7 +587,28 @@ class ConnectionWrapper implements IConnection {
 		return connection.isWrapperFor(arg0);
 	}
 
-	public Object unwrap(Class arg0) throws SQLException {
-		return connection.unwrap(arg0);
+	public void setSchema(String schema) throws SQLException {
+		connection.setSchema(schema);
+	}
+
+	public String getSchema() throws SQLException {
+		return connection.getSchema();
+	}
+
+	public void abort(java.util.concurrent.Executor executor) throws SQLException {
+		connection.abort(executor);
+	}
+
+	public void setNetworkTimeout(java.util.concurrent.Executor executor, int milliseconds)
+			throws SQLException {
+		connection.setNetworkTimeout(executor, milliseconds);
+	}
+
+	public int getNetworkTimeout() throws SQLException {
+		return connection.getNetworkTimeout();
+	}
+
+	public Object unwrap(Class iface) throws SQLException {
+		return connection.unwrap(iface);
 	}
 }
