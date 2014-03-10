@@ -573,7 +573,10 @@ class ConnectionWrapper implements IConnection {
 				Iterator it = paramColumns.iterator();
 				while (it.hasNext()) {
 					Column column = (Column) it.next();
-					binder.bind(st, item, index++, column.getFieldName(), column.getDbType());
+					int dbType = column.getDbType();
+					if (dbType == Types.IDENTITY)
+						dbType = Types.EMPTY;
+					binder.bind(st, item, index++, column.getFieldName(), dbType);
 				}
 			}
 			
@@ -666,7 +669,10 @@ class ConnectionWrapper implements IConnection {
 				Iterator it = paramColumns.iterator();
 				while (it.hasNext()) {
 					Column column = (Column) it.next();
-					binder.bind(st, item, index++, column.getFieldName(), column.getDbType());
+					int dbType = column.getDbType();
+					if (dbType == Types.IDENTITY)
+						dbType = Types.EMPTY;
+					binder.bind(st, item, index++, column.getFieldName(), dbType);
 				}
 			}
 			
