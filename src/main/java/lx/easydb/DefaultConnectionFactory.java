@@ -18,6 +18,7 @@ import lx.easydb.mapping.Mapping;
  *
  */
 public class DefaultConnectionFactory implements IConnectionFactory {
+	private static final ReflectiveBinder reflectiveBinder = new ReflectiveBinder();
 	private String driver;
 	private String url;
 	private String user;
@@ -86,9 +87,8 @@ public class DefaultConnectionFactory implements IConnectionFactory {
 			binder = (ValueBinder) binders.get(Map.class);
 		else
 			binder = (ValueBinder) binders.get(clazz);
-		if (binder == null) {
-			// TODO reflect binder
-		}
+		if (binder == null)
+			binder = reflectiveBinder;
 		return binder;
 	}
 	
