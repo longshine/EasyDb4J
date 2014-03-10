@@ -25,16 +25,12 @@ public abstract class AbstractDbTest extends TestCase {
 		this.factory = factory;
 	}
 
-	public void testConnection() {
-		try {
-			IConnection conn = factory.openConnection();
-			conn.close();
-		} catch (Exception ex) {
-			fail(ex.getMessage());
-		}
+	public void testConnection() throws SQLException {
+		IConnection conn = factory.openConnection();
+		conn.close();
 	}
 	
-	public void testExecuteDirectSQL() {
+	public void testExecuteDirectSQL() throws SQLException {
 		IConnection conn = open();
 		try {
 			assertEquals(conn.executeUpdate("create table t(i int)"), 0);
@@ -46,8 +42,6 @@ public abstract class AbstractDbTest extends TestCase {
 			rs.close();
 			
 			assertEquals(conn.executeScalar("select * from t"), new Integer(1));
-		} catch (SQLException ex) {
-			fail(ex.getMessage());
 		} finally {
 			try {
 				conn.executeUpdate("drop table t");
@@ -57,7 +51,7 @@ public abstract class AbstractDbTest extends TestCase {
 		}
 	}
 	
-	public void testExecuteStrongType() {
+	public void testExecuteStrongType() throws SQLException {
 		IConnection conn = open();
 		
 		try {
@@ -70,8 +64,6 @@ public abstract class AbstractDbTest extends TestCase {
 			assertEquals(rs.getString(1), "skywalker");
 			assertEquals(rs.getInt(2), 13);
 			rs.close();
-		} catch (SQLException ex) {
-			fail(ex.getMessage());
 		} finally {
 			try {
 				conn.executeUpdate("drop table t");
@@ -81,7 +73,7 @@ public abstract class AbstractDbTest extends TestCase {
 		}
 	}
 	
-	public void testExecuteMultipleStrongType() {
+	public void testExecuteMultipleStrongType() throws SQLException {
 		IConnection conn = open();
 		
 		ArrayList list = new ArrayList();
@@ -94,8 +86,6 @@ public abstract class AbstractDbTest extends TestCase {
 			Object total = conn.executeScalar("select sum(age) from t");
 			assertTrue(total instanceof Number);
 			assertEquals(((Number) total).intValue(), 36);
-		} catch (SQLException ex) {
-			fail(ex.getMessage());
 		} finally {
 			try {
 				conn.executeUpdate("drop table t");
@@ -105,7 +95,7 @@ public abstract class AbstractDbTest extends TestCase {
 		}
 	}
 	
-	public void testExecuteMap() {
+	public void testExecuteMap() throws SQLException {
 		IConnection conn = open();
 		
 		HashMap user = new HashMap();
@@ -121,8 +111,6 @@ public abstract class AbstractDbTest extends TestCase {
 			assertEquals(rs.getString(1), "skywalker");
 			assertEquals(rs.getInt(2), 13);
 			rs.close();
-		} catch (SQLException ex) {
-			fail(ex.getMessage());
 		} finally {
 			try {
 				conn.executeUpdate("drop table t");
@@ -132,7 +120,7 @@ public abstract class AbstractDbTest extends TestCase {
 		}
 	}
 	
-	public void testExecuteMultipleMap() {
+	public void testExecuteMultipleMap() throws SQLException {
 		IConnection conn = open();
 		
 		ArrayList list = new ArrayList();
@@ -152,8 +140,6 @@ public abstract class AbstractDbTest extends TestCase {
 			Object total = conn.executeScalar("select sum(age) from t");
 			assertTrue(total instanceof Number);
 			assertEquals(((Number) total).intValue(), 36);
-		} catch (SQLException ex) {
-			fail(ex.getMessage());
 		} finally {
 			try {
 				conn.executeUpdate("drop table t");
@@ -163,7 +149,7 @@ public abstract class AbstractDbTest extends TestCase {
 		}
 	}
 	
-	public void testQueryMap() {
+	public void testQueryMap() throws SQLException {
 		IConnection conn = open();
 		
 		try {
@@ -189,8 +175,6 @@ public abstract class AbstractDbTest extends TestCase {
 			map = (Map) list.get(0);
 			assertEquals(map.get("name"), "skywalker");
 			assertEquals(map.get("age"), new Integer(13));
-		} catch (SQLException ex) {
-			fail(ex.getMessage());
 		} finally {
 			try {
 				conn.executeUpdate("drop table t");
@@ -200,7 +184,7 @@ public abstract class AbstractDbTest extends TestCase {
 		}
 	}
 	
-	public void testQueryEntityMap() {
+	public void testQueryEntityMap() throws SQLException {
 		IConnection conn = open();
 		
 		try {
@@ -220,8 +204,6 @@ public abstract class AbstractDbTest extends TestCase {
 			map = (Map) list.get(0);
 			assertEquals(map.get("name"), "vader");
 			assertEquals(map.get("age"), new Integer(23));
-		} catch (SQLException ex) {
-			fail(ex.getMessage());
 		} finally {
 			try {
 				conn.executeUpdate("drop table t");
@@ -231,7 +213,7 @@ public abstract class AbstractDbTest extends TestCase {
 		}
 	}
 	
-	public void testQueryEntityStrongType() {
+	public void testQueryEntityStrongType() throws SQLException {
 		IConnection conn = open();
 		
 		try {
@@ -253,8 +235,6 @@ public abstract class AbstractDbTest extends TestCase {
 			user = (User) list.get(0);
 			assertEquals(user.getName(), "vader");
 			assertEquals(user.getAge(), 23);
-		} catch (SQLException ex) {
-			fail(ex.getMessage());
 		} finally {
 			try {
 				conn.executeUpdate("drop table t");
@@ -264,7 +244,7 @@ public abstract class AbstractDbTest extends TestCase {
 		}
 	}
 	
-	public void testCRUD() {
+	public void testCRUD() throws SQLException {
 		IConnection conn = open();
 		
 		Table table = factory.getMapping().findTable(User.class);
@@ -302,8 +282,6 @@ public abstract class AbstractDbTest extends TestCase {
 			assertNotNull(user);
 			assertEquals(user.getName(), "vader");
 			assertEquals(user.getAge(), 13);
-		} catch (SQLException ex) {
-			fail(ex.getMessage());
 		} finally {
 			try {
 				conn.dropTable(User.class);
@@ -313,7 +291,7 @@ public abstract class AbstractDbTest extends TestCase {
 		}
 	}
 	
-	public void testCustomBinderAndExtractor() {
+	public void testCustomBinderAndExtractor() throws SQLException {
 		IConnection conn = open();
 		
 		factory.registerBinder(User.class, new ValueBinder() {
@@ -373,8 +351,6 @@ public abstract class AbstractDbTest extends TestCase {
 				// should occur since no parameter is specified
 				assertNotNull(e);
 			}
-		} catch (SQLException ex) {
-			fail(ex.getMessage());
 		} finally {
 			try {
 				conn.executeUpdate("drop table t");
