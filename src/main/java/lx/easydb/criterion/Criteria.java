@@ -65,7 +65,7 @@ public class Criteria implements ICriteria, ICriteriaRender {
 	}
 
 	public int count() throws SQLException {
-		List list = connection.query(Integer.class, toSqlCountString(), params.keySet(), null, params);
+		List list = connection.query(Integer.class, toSqlCountString(), params.keySet(), params);
 		return ((Integer) list.get(0)).intValue();
 	}
 
@@ -76,7 +76,7 @@ public class Criteria implements ICriteria, ICriteriaRender {
 	public List list(int total, int offset) throws SQLException {
 		this.total = total;
         this.offset = offset;
-        return connection.query(entity, toSqlString(), params.keySet(), null, params);
+        return connection.query(entity, toSqlString(), params.keySet(), params);
 	}
 
 	public ICriteria setProjection(IProjection projection) {

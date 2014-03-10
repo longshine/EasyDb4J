@@ -4,28 +4,7 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.net.URL;
-import java.sql.Array;
-import java.sql.Blob;
-import java.sql.CallableStatement;
-import java.sql.Clob;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.Date;
-import java.sql.NClob;
-import java.sql.PreparedStatement;
-import java.sql.Ref;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.RowId;
-import java.sql.SQLClientInfoException;
-import java.sql.SQLException;
-import java.sql.SQLWarning;
-import java.sql.SQLXML;
-import java.sql.Savepoint;
-import java.sql.Statement;
-import java.sql.Struct;
-import java.sql.Time;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -267,26 +246,84 @@ public interface IConnection extends Connection {
 	
 	/**
 	 * Executes a query and returns list of data.
-	 * @param entity the name of returned entities
 	 * @param sql the text command to run against the data source
-	 * @param paramNames the collection of parameters' names
-	 * @param paramTypes the collection of parameters' types
+	 * @return a list
+	 * @throws SQLException
+	 */
+	List query(String sql) throws SQLException;
+	/**
+	 * Executes a query and returns list of data.
+	 * @param sql the text command to run against the data source
+	 * @param params the values of parameters in the statement
+	 * @return a list
+	 * @throws SQLException
+	 */
+	List query(String sql, Object[] params) throws SQLException;
+	/**
+	 * Executes a query and returns list of data.
+	 * @param sql the text command to run against the data source
+	 * @param paramNames collection of names of parameters in the SQL statement
 	 * @param item the object which contains parameters
 	 * @return a list
 	 * @throws SQLException
 	 */
-	List query(String entity, String sql, Collection paramNames, Collection paramTypes, Object item) throws SQLException;
+	List query(String sql, String[] paramNames, Object item) throws SQLException;
+	/**
+	 * Executes a query and returns list of data.
+	 * @param entity the name of returned entities
+	 * @param sql the text command to run against the data source
+	 * @return a list
+	 * @throws SQLException
+	 */
+	List query(String entity, String sql) throws SQLException;
+	/**
+	 * Executes a query and returns list of data.
+	 * @param entity the name of returned entities
+	 * @param sql the text command to run against the data source
+	 * @param paramNames the collection of parameters' names
+	 * @param item the object which contains parameters
+	 * @return a list
+	 * @throws SQLException
+	 */
+	List query(String entity, String sql, String[] paramNames, Object item) throws SQLException;
+	/**
+	 * Executes a query and returns list of data.
+	 * @param entity the name of returned entities
+	 * @param sql the text command to run against the data source
+	 * @param paramNames the collection of parameters' names
+	 * @param item the object which contains parameters
+	 * @return a list
+	 * @throws SQLException
+	 */
+	List query(String entity, String sql, Collection paramNames, Object item) throws SQLException;
+	/**
+	 * Executes a query and returns list of data.
+	 * @param clazz the type of returned entities
+	 * @param sql the text command to run against the data source
+	 * @return a list
+	 * @throws SQLException
+	 */
+	List query(Class clazz, String sql) throws SQLException;
 	/**
 	 * Executes a query and returns list of data.
 	 * @param clazz the type of returned entities
 	 * @param sql the text command to run against the data source
 	 * @param paramNames the collection of parameters' names
-	 * @param paramTypes the collection of parameters' types
 	 * @param item the object which contains parameters
 	 * @return a list
 	 * @throws SQLException
 	 */
-	List query(Class clazz, String sql, Collection paramNames, Collection paramTypes, Object item) throws SQLException;
+	List query(Class clazz, String sql, String[] paramNames, Object item) throws SQLException;
+	/**
+	 * Executes a query and returns list of data.
+	 * @param clazz the type of returned entities
+	 * @param sql the text command to run against the data source
+	 * @param paramNames the collection of parameters' names
+	 * @param item the object which contains parameters
+	 * @return a list
+	 * @throws SQLException
+	 */
+	List query(Class clazz, String sql, Collection paramNames, Object item) throws SQLException;
 
 	/**
 	 * Creates a criteria query.
@@ -342,12 +379,22 @@ class ConnectionWrapper implements IConnection {
 	}
 	
 	public ResultSet executeQuery(String sql, String[] paramNames, Object item) throws SQLException {
+		return executeQuery(sql, paramNames, null, item);
+	}
+	
+	private ResultSet executeQuery(String sql, String[] paramNames, int[] sqlTypes, Object item) throws SQLException {
 		PreparedStatement st = connection.prepareStatement(sql);
 		
 		if (paramNames != null) {
 			ValueBinder binder = getBinder(item.getClass());
-			for (int i = 0; i < paramNames.length; i++) {
-				binder.bind(st, item, i + 1, paramNames[i], Types.EMPTY);
+			if (sqlTypes == null || sqlTypes.length != paramNames.length) {
+				for (int i = 0; i < paramNames.length; i++) {
+					binder.bind(st, item, i + 1, paramNames[i], Types.EMPTY);
+				}
+			} else {
+				for (int i = 0; i < paramNames.length; i++) {
+					binder.bind(st, item, i + 1, paramNames[i], sqlTypes[i]);
+				}
 			}
 		}
 		
@@ -455,12 +502,29 @@ class ConnectionWrapper implements IConnection {
 			st = connection.prepareStatement(sql);
 			
 			if (paramNames != null) {
-				if (item instanceof Collection) {
+				if (item.getClass().isArray()) {
+					int total = 0;
+					for (int index = 0, len = java.lang.reflect.Array.getLength(item);
+							index < len; index++) {
+						Object obj = java.lang.reflect.Array.get(item, index);
+						if (obj == null)
+							continue;
+						ValueBinder binder = getBinder(obj.getClass());
+						for (int i = 0; i < paramNames.length; i++) {
+							binder.bind(st, obj, i + 1, paramNames[i], Types.EMPTY);
+						}
+						total += st.executeUpdate();
+					}
+					return total;
+					
+				} else if (item instanceof Collection) {
 					Collection col = (Collection) item;
 					int total = 0;
 					
 					for (Iterator it = col.iterator(); it.hasNext(); st.clearParameters()) {
 						Object obj = it.next();
+						if (obj == null)
+							continue;
 						ValueBinder binder = getBinder(obj.getClass());
 						for (int i = 0; i < paramNames.length; i++) {
 							binder.bind(st, obj, i + 1, paramNames[i], Types.EMPTY);
@@ -491,13 +555,20 @@ class ConnectionWrapper implements IConnection {
 		return binder;
 	}
 	
+	private ValueExtractor getExtractor(Class clazz) {
+		ValueExtractor extractor = factory.getExtractor(clazz);
+		if (extractor == null)
+			throw new QueryException("No ValueExtractor found for " + clazz);
+		return extractor;
+	}
+	
 	private int executeUpdate(String sql, Collection paramColumns, Object item) throws SQLException {
 		PreparedStatement st = null;
 		try {
 			st = connection.prepareStatement(sql);
 			
 			if (paramColumns != null) {
-				ValueBinder binder = factory.getBinder(item.getClass());
+				ValueBinder binder = getBinder(item.getClass());
 				int index = 1;
 				Iterator it = paramColumns.iterator();
 				while (it.hasNext()) {
@@ -513,19 +584,61 @@ class ConnectionWrapper implements IConnection {
 		}
 	}
 	
-	public List query(String entity, String sql, Collection paramColumns, Object item) throws SQLException {
-		Table table = factory.getMapping().findTable(entity);
-		return queryInternal(table.getEntityClass(), table, sql, paramColumns, item);
-	}
-
-	public List query(String entity, String sql, Collection paramNames, Collection paramTypes, Object item) throws SQLException {
-		Table table = factory.getMapping().findTable(entity);
-		return queryInternal(table.getEntityClass(), table, sql, paramNames, paramTypes, item);
+	public List query(String sql) throws SQLException {
+		ResultSet rs = executeQuery(sql);
+		try {
+			return extract(Map.class, null, rs);
+		} finally {
+			rs.close();
+		}
 	}
 	
-	public List query(Class clazz, String sql, Collection paramNames, Collection paramTypes, Object item) throws SQLException {
+	public List query(String sql, Object[] params) throws SQLException {
+		ResultSet rs = executeQuery(sql, params);
+		try {
+			return extract(Map.class, null, rs);
+		} finally {
+			rs.close();
+		}
+	}
+	
+	public List query(String sql, String[] paramNames, Object item) throws SQLException {
+		ResultSet rs = executeQuery(sql, paramNames, item);
+		try {
+			return extract(Map.class, null, rs);
+		} finally {
+			rs.close();
+		}
+	}
+	
+	public List query(String entity, String sql) throws SQLException {
+		return query(entity, sql, (String[]) null, null);
+	}
+
+	public List query(String entity, String sql, String[] paramNames, Object item) throws SQLException {
+		Table table = factory.getMapping().findTable(entity);
+		return queryInternal(table == null ? Map.class : table.getEntityClass(), table,
+				sql, paramNames, null, item);
+	}
+	
+	public List query(String entity, String sql, Collection paramNames, Object item) throws SQLException {
+		Table table = factory.getMapping().findTable(entity);
+		return queryInternal(table == null ? Map.class : table.getEntityClass(), table,
+				sql, paramNames, null, item);
+	}
+	
+	public List query(Class clazz, String sql) throws SQLException {
+		return query(clazz, sql, (String[]) null, null);
+	}
+	
+	public List query(Class clazz, String sql, String[] paramNames, Object item) throws SQLException {
+		Table table = factory.getMapping().findTable(clazz);
+		return queryInternal(clazz, table, sql, paramNames, null, item);
+	}
+	
+	public List query(Class clazz, String sql, Collection paramNames, Object item) throws SQLException {
 		Table table = factory.getMapping().findTable(clazz.getName());
-		return queryInternal(clazz, table, sql, paramNames, paramTypes, item);
+		return queryInternal(clazz, table, sql, paramNames, null, item);
 	}
 	
 	public ICriteria createCriteria(String entity) {
@@ -536,9 +649,8 @@ class ConnectionWrapper implements IConnection {
 		return new Criteria(clazz.getName(), this, factory);
 	}
 	
-	private List queryInternal(Class clazz, Table table, PreparedStatement st) throws SQLException {
-		ValueExtractor extractor = factory.getExtractor(clazz);
-		ResultSet rs = st.executeQuery();
+	private List extract(Class clazz, Table table, ResultSet rs) throws SQLException {
+		ValueExtractor extractor = getExtractor(clazz);
 		return extractor.extract(rs, table);
 	}
 	
@@ -549,7 +661,7 @@ class ConnectionWrapper implements IConnection {
 			st = connection.prepareStatement(sql);
 			
 			if (paramColumns != null) {
-				ValueBinder binder = factory.getBinder(item.getClass());
+				ValueBinder binder = getBinder(item.getClass());
 				int index = 1;
 				Iterator it = paramColumns.iterator();
 				while (it.hasNext()) {
@@ -558,11 +670,22 @@ class ConnectionWrapper implements IConnection {
 				}
 			}
 			
-			return queryInternal(clazz, table, st);
+			ResultSet rs = st.executeQuery();
+			try {
+				return extract(clazz, table, rs);
+			} finally {
+				rs.close();
+			}
 		} finally {
 			if (st != null)
 				st.close();
 		}
+	}
+	
+	private List queryInternal(Class clazz, Table table, String sql,
+			String[] paramNames, int[] paramTypes, Object item) throws SQLException {
+		ResultSet rs = executeQuery(sql, paramNames, paramTypes, item);
+		return extract(clazz, table, rs);
 	}
 	
 	private List queryInternal(Class clazz, Table table, String sql,
@@ -573,7 +696,7 @@ class ConnectionWrapper implements IConnection {
 			st = connection.prepareStatement(sql);
 			
 			if (paramNames != null) {
-				ValueBinder binder = factory.getBinder(item.getClass());
+				ValueBinder binder = getBinder(item.getClass());
 				int index = 1;
 				Iterator itName = paramNames.iterator();
 				if (paramTypes != null) {
@@ -588,7 +711,12 @@ class ConnectionWrapper implements IConnection {
 				}
 			}
 			
-			return queryInternal(clazz, table, st);
+			ResultSet rs = st.executeQuery();
+			try {
+				return extract(clazz, table, rs);
+			} finally {
+				rs.close();
+			}
 		} finally {
 			if (st != null)
 				st.close();

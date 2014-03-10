@@ -4,6 +4,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import junit.framework.TestCase;
 import lx.easydb.IConnection;
@@ -28,9 +30,9 @@ public abstract class AbstractDbTest extends TestCase {
 	public void testExecuteDirectSQL() {
 		IConnection conn = open();
 		try {
-			conn.executeUpdate("create table t(i int)");
-			conn.executeUpdate("insert into t values (?)",
-					new Object[] { new Integer(1) });
+			assertEquals(conn.executeUpdate("create table t(i int)"), 0);
+			assertEquals(conn.executeUpdate("insert into t values (?)",
+					new Object[] { new Integer(1) }), 1);
 			ResultSet rs = conn.executeQuery("select * from t");
 			assertTrue(rs.next());
 			assertEquals(rs.getInt(1), 1);
@@ -53,9 +55,9 @@ public abstract class AbstractDbTest extends TestCase {
 		
 		try {
 			conn.executeUpdate("create table t(name varchar(32), age int)");
-			conn.executeUpdate("insert into t (name,age) values (?, ?)",
+			assertEquals(conn.executeUpdate("insert into t (name,age) values (?, ?)",
 					new String[] { "name", "age" },
-					new User("skywalker", 13));
+					new User("skywalker", 13)), 1);
 			ResultSet rs = conn.executeQuery("select * from t");
 			assertTrue(rs.next());
 			assertEquals(rs.getString(1), "skywalker");
@@ -80,8 +82,8 @@ public abstract class AbstractDbTest extends TestCase {
 		list.add(new User("vader", 23));
 		try {
 			conn.executeUpdate("create table t(name varchar(32), age int)");
-			conn.executeUpdate("insert into t (name,age) values (?, ?)",
-					new String[] { "name", "age" }, list);
+			assertEquals(conn.executeUpdate("insert into t (name,age) values (?, ?)",
+					new String[] { "name", "age" }, list), 2);
 			Object total = conn.executeScalar("select sum(age) from t");
 			assertTrue(total instanceof Number);
 			assertEquals(((Number) total).intValue(), 36);
@@ -105,8 +107,8 @@ public abstract class AbstractDbTest extends TestCase {
 		
 		try {
 			conn.executeUpdate("create table t(name varchar(32), age int)");
-			conn.executeUpdate("insert into t (name,age) values (?, ?)",
-					new String[] { "name", "age" }, user);
+			assertEquals(conn.executeUpdate("insert into t (name,age) values (?, ?)",
+					new String[] { "name", "age" }, user), 1);
 			ResultSet rs = conn.executeQuery("select * from t");
 			assertTrue(rs.next());
 			assertEquals(rs.getString(1), "skywalker");
@@ -138,11 +140,112 @@ public abstract class AbstractDbTest extends TestCase {
 		
 		try {
 			conn.executeUpdate("create table t(name varchar(32), age int)");
-			conn.executeUpdate("insert into t (name,age) values (?, ?)",
-					new String[] { "name", "age" }, list);
+			assertEquals(conn.executeUpdate("insert into t (name,age) values (?, ?)",
+					new String[] { "name", "age" }, list), 2);
 			Object total = conn.executeScalar("select sum(age) from t");
 			assertTrue(total instanceof Number);
 			assertEquals(((Number) total).intValue(), 36);
+		} catch (SQLException ex) {
+			fail(ex.getMessage());
+		} finally {
+			try {
+				conn.executeUpdate("drop table t");
+			} catch (Exception ex) { }
+			
+			close(conn);
+		}
+	}
+	
+	public void testQueryMap() {
+		IConnection conn = open();
+		
+		try {
+			conn.executeUpdate("create table t(name varchar(32), age int)");
+			assertEquals(conn.executeUpdate("insert into t (name,age) values (?, ?)",
+					new String[] { "name", "age" },
+					new User[] { new User("skywalker", 13), new User("vader", 23)}), 2);
+			
+			List list = conn.query("select * from t");
+			assertEquals(list.size(), 2);
+			Map map = (Map) list.get(0);
+			assertEquals(map.get("name"), "skywalker");
+			assertEquals(map.get("age"), new Integer(13));
+			
+			list = conn.query("select * from t where name = ?", new String[] { "name" }, list.get(1));
+			assertEquals(list.size(), 1);
+			map = (Map) list.get(0);
+			assertEquals(map.get("name"), "vader");
+			assertEquals(map.get("age"), new Integer(23));
+			
+			list = conn.query("select * from t where name = ?", new Object[] { "skywalker" });
+			assertEquals(list.size(), 1);
+			map = (Map) list.get(0);
+			assertEquals(map.get("name"), "skywalker");
+			assertEquals(map.get("age"), new Integer(13));
+		} catch (SQLException ex) {
+			fail(ex.getMessage());
+		} finally {
+			try {
+				conn.executeUpdate("drop table t");
+			} catch (Exception ex) { }
+			
+			close(conn);
+		}
+	}
+	
+	public void testQueryEntityMap() {
+		IConnection conn = open();
+		
+		try {
+			conn.executeUpdate("create table t(name varchar(32), age int)");
+			assertEquals(conn.executeUpdate("insert into t (name,age) values (?, ?)",
+					new String[] { "name", "age" },
+					new User[] { new User("skywalker", 13), new User("vader", 23)}), 2);
+			
+			List list = conn.query("User", "select * from t");
+			assertEquals(list.size(), 2);
+			Map map = (Map) list.get(0);
+			assertEquals(map.get("name"), "skywalker");
+			assertEquals(map.get("age"), new Integer(13));
+			
+			list = conn.query("User", "select * from t where name = ?", new String[] { "name" }, list.get(1));
+			assertEquals(list.size(), 1);
+			map = (Map) list.get(0);
+			assertEquals(map.get("name"), "vader");
+			assertEquals(map.get("age"), new Integer(23));
+		} catch (SQLException ex) {
+			fail(ex.getMessage());
+		} finally {
+			try {
+				conn.executeUpdate("drop table t");
+			} catch (Exception ex) { }
+			
+			close(conn);
+		}
+	}
+	
+	public void testQueryEntityStrongType() {
+		IConnection conn = open();
+		
+		try {
+			conn.executeUpdate("create table t(name varchar(32), age int)");
+			assertEquals(conn.executeUpdate("insert into t (name,age) values (?, ?)",
+					new String[] { "name", "age" },
+					new User[] { new User("skywalker", 13), new User("vader", 23)}), 2);
+			
+			List list = conn.query(User.class, "select * from t");
+			assertEquals(list.size(), 2);
+			User user = (User) list.get(0);
+			assertEquals(user.getName(), "skywalker");
+			assertEquals(user.getAge(), 13);
+			
+			factory.getMapping().registerTable("user", factory.getMapping().findTable(User.class));
+			
+			list = conn.query("user", "select * from t where name = ?", new String[] { "name" }, list.get(1));
+			assertEquals(list.size(), 1);
+			user = (User) list.get(0);
+			assertEquals(user.getName(), "vader");
+			assertEquals(user.getAge(), 23);
 		} catch (SQLException ex) {
 			fail(ex.getMessage());
 		} finally {
@@ -171,7 +274,7 @@ public abstract class AbstractDbTest extends TestCase {
 		}
 	}
 	
-	class User {
+	static class User {
 		private String name;
 		private int age;
 		
