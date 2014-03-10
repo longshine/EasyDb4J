@@ -1,5 +1,11 @@
 package lx.easydb;
 
+/**
+ * Exception that occurs in query.
+ * 
+ * @author Long
+ *
+ */
 public class QueryException extends RuntimeException {
 	private static final long serialVersionUID = 3147139684496027115L;
 

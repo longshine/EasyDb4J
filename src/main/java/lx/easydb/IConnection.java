@@ -28,32 +28,185 @@ import lx.easydb.criterion.Criteria;
 import lx.easydb.mapping.Column;
 import lx.easydb.mapping.Table;
 
+/**
+ * Represents a {@link Connection} with extended methods of
+ * entity query and criterion query.
+ * 
+ * @author Long
+ *
+ */
 public interface IConnection extends Connection {
+	/**
+	 * Gets the underlying associated {@link Connection}.
+	 */
 	Connection getConnection();
+	/**
+	 * Executes an SQL statement and returns the number of rows affected.
+	 * Shortcut for {@link PreparedStatement#executeUpdate()}.
+	 * @param sql an SQL statement
+	 * @return the number of rows affected, or 0 for SQLs that return nothing
+	 * @throws SQLException
+	 */
 	int executeUpdate(String sql) throws SQLException;
+	/**
+	 * Executes an SQL statement and returns the number of rows affected.
+	 * Shortcut for {@link PreparedStatement#executeUpdate()}.
+	 * @param sql an SQL statement
+	 * @param params the values of params in the statement
+	 * @return the number of rows affected, or 0 for SQLs that return nothing
+	 * @throws SQLException
+	 */
 	int executeUpdate(String sql, Object[] params) throws SQLException;
+	/**
+	 * Executes an SQL statement and returns the number of rows affected.
+	 * Shortcut for {@link PreparedStatement#executeUpdate()}.
+	 * @param sql an SQL statement
+	 * @param params the values of parameters in the statement
+	 * @param sqlTypes the types of parameters in the statement
+	 * @return the number of rows affected, or 0 for SQLs that return nothing
+	 * @throws SQLException
+	 */
 	int executeUpdate(String sql, Object[] params, int[] sqlTypes) throws SQLException;
 
+	/**
+	 * Checks if the table mapped to the entity exists.
+	 * @param entity the name of the entity
+	 * @return true if the table mapped to the entity exists, otherwise false
+	 */
 	boolean existTable(String entity);
+	/**
+	 * Creates a table mapped to the entity.
+	 * @param entity the name of the entity
+	 * @throws SQLException
+	 */
 	void createTable(String entity) throws SQLException;
+	/**
+	 * Drops a table mapped to the entity.
+	 * @param entity the name of the entity
+	 * @throws SQLException
+	 */
 	void dropTable(String entity) throws SQLException;
+	/**
+	 * Inserts an entity and returns generated identity value if any.
+	 * @param entity the name of the entity
+	 * @param item the entity to insert
+	 * @return the generated identity value if any
+	 * @throws SQLException
+	 */
 	long insert(String entity, Object item) throws SQLException;
+	/**
+	 * Updates an entity.
+	 * @param entity the name of the entity
+	 * @param item the entity to update
+	 * @return true if updated, false if not found or not modified (for tracked entities)
+	 * @throws SQLException
+	 */
 	boolean update(String entity, Object item) throws SQLException;
+	/**
+	 * 
+	 * Deletes an entity.
+	 * @param entity the name of the entity
+	 * @param item the entity to delete
+	 * @return true if deleted, false if nothing happened
+	 * @throws SQLException
+	 */
 	boolean delete(String entity, Object item) throws SQLException;
+	/**
+	 * Finds an entity by one or more keys.
+	 * @param entity the name of returned entity
+	 * @param id the value of primary key(s)
+	 * @return an instance of the type, or a default value if nothing is found
+	 * @throws SQLException
+	 * @throws QueryException if the entity has no primary-key property
+	 */
 	Object find(String entity, Object id) throws SQLException, QueryException;
 	
+	/**
+	 * Checks if the table mapped to the entity exists.
+	 * @param clazz the type of the entity
+	 * @return true if the table mapped to the entity exists, otherwise false
+	 */
 	boolean existTable(Class clazz);
+	/**
+	 * Creates a table mapped to the entity.
+	 * @param clazz the type of the entity
+	 * @throws SQLException
+	 */
 	void createTable(Class clazz) throws SQLException;
+	/**
+	 * Drops a table mapped to the entity.
+	 * @param clazz the type of the entity
+	 * @throws SQLException
+	 */
 	void dropTable(Class clazz) throws SQLException;
+	/**
+	 * Inserts an entity and returns generated identity value if any.
+	 * @param clazz the type of the entity
+	 * @param item the entity to insert
+	 * @return the generated identity value if any
+	 * @throws SQLException
+	 */
 	long insert(Class clazz, Object item) throws SQLException;
+	/**
+	 * Updates an entity.
+	 * @param clazz the type of the entity
+	 * @param item the entity to update
+	 * @return true if updated, false if not found or not modified (for tracked entities)
+	 * @throws SQLException
+	 */
 	boolean update(Class clazz, Object item) throws SQLException;
+	/**
+	 * Deletes an entity.
+	 * @param clazz the type of the entity
+	 * @param item the entity to delete
+	 * @return true if deleted, false if nothing happened
+	 * @throws SQLException
+	 */
 	boolean delete(Class clazz, Object item) throws SQLException;
+	/**
+	 * Finds an entity by one or more keys. 
+	 * @param clazz the type of the returned entity
+	 * @param id the value of primary key(s)
+	 * @return an instance of the type, or a default value if nothing is found
+	 * @throws SQLException
+	 * @throws QueryException if the entity has no primary-key property
+	 */
 	Object find(Class clazz, Object id) throws SQLException, QueryException;
 	
+	/**
+	 * Executes a query and returns list of data.
+	 * @param entity the name of returned entities
+	 * @param sql the text command to run against the data source
+	 * @param paramNames the collection of parameters' names
+	 * @param paramTypes the collection of parameters' types
+	 * @param item the object which contains parameters
+	 * @return a list
+	 * @throws SQLException
+	 */
 	List query(String entity, String sql, Collection paramNames, Collection paramTypes, Object item) throws SQLException;
+	/**
+	 * Executes a query and returns list of data.
+	 * @param clazz the type of returned entities
+	 * @param sql the text command to run against the data source
+	 * @param paramNames the collection of parameters' names
+	 * @param paramTypes the collection of parameters' types
+	 * @param item the object which contains parameters
+	 * @return a list
+	 * @throws SQLException
+	 */
 	List query(Class clazz, String sql, Collection paramNames, Collection paramTypes, Object item) throws SQLException;
 
+	/**
+	 * Creates a criteria query.
+	 * @param entity the name of queried entity
+	 * @return a {@link ICriteria} to query entities
+	 */
 	ICriteria createCriteria(String entity);
+	/**
+	 * Creates a criteria query.
+	 * @param clazz the type of queried entity
+	 * @return a {@link ICriteria} to query entities
+	 */
 	ICriteria createCriteria(Class clazz);
 }
 

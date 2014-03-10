@@ -1,10 +1,3 @@
-/**
- * Copyright (c) 2011-2013 SmeshLink Technology Corporation.
- * All rights reserved.
- * 
- * This file is part of the SmeshServer, a gateway middleware for WSN.
- * Please see README for more information.
- */
 package lx.easydb;
 
 import java.sql.PreparedStatement;
@@ -19,6 +12,8 @@ import lx.easydb.dialect.Dialect;
 import lx.easydb.mapping.Mapping;
 
 /**
+ * Default implementation of {@link IConnectionFactory}.
+ * 
  * @author smeshlink
  *
  */

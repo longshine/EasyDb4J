@@ -15,6 +15,13 @@ public class Projections {
     public static IProjection distinct(IProjection projection) {
         return new Distinct(projection);
     }
+    
+    /**
+     * Create a distinct projection from a property.
+     */
+    public static IProjection distinct(String property) {
+        return new Distinct(property(property));
+    }
 
     /**
      * The query row count, ie. <code>count(*)</code>

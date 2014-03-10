@@ -1,10 +1,3 @@
-/**
- * Copyright (c) 2011 SmeshLink Technology Corporation.
- * All rights reserved.
- * 
- * This file is part of the SmeshServer, a gateway middleware for WSN.
- * Please see README for more information.
- */
 package lx.easydb.datasource;
 
 import java.sql.Array;
@@ -26,6 +19,9 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
+ * An {@link IDataSource} which holds a {@link Connection}
+ * as a singleton. It never closes the inner connection really.
+ * 
  * @author Longshine
  *
  */
@@ -37,10 +33,16 @@ public class SingletonDataSource extends DataSource {
 		this.conn = new SingletonConnection(java.sql.DriverManager.getConnection(this.url, this.user, this.password));
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public synchronized final Connection getConnection() throws SQLException {
 		return this.conn;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	protected void finalize() throws Throwable {
 		close();
 	}

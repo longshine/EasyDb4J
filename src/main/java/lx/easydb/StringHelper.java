@@ -23,8 +23,7 @@ public final class StringHelper {
         int loc = template.indexOf( placeholder );
 		if ( loc < 0 ) {
 			return template;
-		}
-		else {
+		} else {
 			return new StringBuffer( template.substring( 0, loc ) )
 					.append( replacement )
 					.append( template.substring( loc + placeholder.length() ) )

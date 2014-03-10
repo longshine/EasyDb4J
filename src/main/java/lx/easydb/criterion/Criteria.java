@@ -18,6 +18,12 @@ import lx.easydb.dialect.function.ISQLFunction;
 import lx.easydb.mapping.Column;
 import lx.easydb.mapping.Table;
 
+/**
+ * Default implementation of {@link ICriteria}.
+ * 
+ * @author Long
+ *
+ */
 public class Criteria implements ICriteria, ICriteriaRender {
 	private List conditions = new ArrayList();
 	private IProjection projection;
@@ -91,7 +97,6 @@ public class Criteria implements ICriteria, ICriteriaRender {
             sql = factory.getDialect().getPaging(sql, orderby, total, offset);
         else if (orderby != null)
             sql += " " + orderby;
-        //System.out.println(sql);
         return sql;
     }
 	

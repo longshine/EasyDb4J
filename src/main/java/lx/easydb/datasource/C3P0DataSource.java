@@ -1,10 +1,3 @@
-/**
- * Copyright (c) 2011 SmeshLink Technology Corporation.
- * All rights reserved.
- * 
- * This file is part of the SmeshServer, a gateway middleware for WSN.
- * Please see README for more information.
- */
 package lx.easydb.datasource;
 
 import java.sql.Connection;
@@ -14,6 +7,9 @@ import java.util.Map;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 /**
+ * An {@link IDataSource} which use {@link ComboPooledDataSource}
+ * of C3P0.
+ * 
  * @author Longshine
  *
  */
@@ -58,6 +54,9 @@ public class C3P0DataSource extends DataSource {
 		this.dataSource.setAcquireIncrement(acquireIncrement);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public Connection getConnection() throws SQLException {
 		return this.dataSource.getConnection();
 	}

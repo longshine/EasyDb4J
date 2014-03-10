@@ -8,8 +8,14 @@ package lx.easydb;
  */
 public class Types {
 	
+	/**
+	 * Unspecified type.
+	 */
 	public final static int EMPTY = -999;
 	
+	/**
+	 * Auto-increment, identity type.
+	 */
 	public final static int IDENTITY = 33;
 
 /**

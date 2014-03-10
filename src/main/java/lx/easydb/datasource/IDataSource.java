@@ -1,19 +1,18 @@
-/**
- * Copyright (c) 2011 SmeshLink Technology Corporation.
- * All rights reserved.
- * 
- * This file is part of the SmeshServer, a gateway middleware for WSN.
- * Please see README for more information.
- */
 package lx.easydb.datasource;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
+ * Provides a method to acquire {@link Connection}s.
+ * 
  * @author Longshine
  *
  */
 public interface IDataSource {
+	/**
+	 * Gets a {@link Connection} from the data source.
+	 * @throws SQLException
+	 */
 	Connection getConnection() throws SQLException;
 }
