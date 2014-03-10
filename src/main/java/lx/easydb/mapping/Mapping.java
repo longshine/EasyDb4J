@@ -9,6 +9,15 @@ public class Mapping {
 	private Map tables = new HashMap();
 	private String schema;
 	private String catalog;
+	private INamingStrategy namingStrategy = new DefaultNamingStrategy();
+	
+	public INamingStrategy getNamingStrategy() {
+		return namingStrategy;
+	}
+	
+	public void setNamingStrategy(INamingStrategy namingStrategy) {
+		this.namingStrategy = namingStrategy;
+	}
 	
 	public Table findTable(String entity) {
 		return (Table) tables.get(entity);
@@ -25,7 +34,12 @@ public class Mapping {
 	}
 	
 	public Table findTable(Class clazz) {
-		return findTable(clazz.getName());
+		Table table = findTable(clazz.getName());
+		if (table == null) {
+			table = new Table(clazz, namingStrategy);
+			registerTable(clazz, table);
+		}
+		return table;
 	}
 	
 	public void registerTable(String entity, Table table) {

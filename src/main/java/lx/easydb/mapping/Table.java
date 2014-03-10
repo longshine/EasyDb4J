@@ -1,5 +1,7 @@
 package lx.easydb.mapping;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -25,6 +27,41 @@ public class Table implements IRelationalModel {
 	private Map uniqueKeys = new HashMap();
 	private List checkConstraints = new ArrayList();
 	private Class entityClass;
+	
+	public Table() {
+		
+	}
+	
+	public Table(Class clazz, INamingStrategy namingStrategy) {
+		setName(namingStrategy.getTableName(clazz.getName()));
+		setEntityClass(clazz);
+		
+		Field[] fields = clazz.getDeclaredFields();
+		for (int i = 0; i < fields.length; i++) {
+			if (Modifier.isStatic(fields[i].getModifiers())
+					|| Modifier.isFinal(fields[i].getModifiers()))
+				continue;
+			String fieldName = fields[i].getName();
+			if (!Modifier.isPublic(fields[i].getModifiers())) {
+				String getterName = "get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+				try {
+					clazz.getMethod(getterName, new Class[] { });
+				} catch (Exception e) {
+					continue;
+				}
+				
+				String setterName = "set" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+				try {
+					clazz.getMethod(setterName, new Class[] { fields[i].getType() });
+				} catch (Exception e) {
+					continue;
+				}
+			}
+			
+			Column column = new Column(namingStrategy.getColumnName(fieldName), fieldName, Types.NULL);
+			addColumn(column);
+		}
+	}
 	
 	public void setName(String name) {
 		this.name = Dialect.unquote(name);
