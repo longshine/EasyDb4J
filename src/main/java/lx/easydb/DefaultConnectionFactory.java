@@ -1,6 +1,5 @@
 package lx.easydb;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,18 +35,8 @@ public class DefaultConnectionFactory implements IConnectionFactory {
 		binders.put(Map.class, new MapBinder());
 		
 		extractors.put(Map.class, new MapExtractor());
-		
-		extractors.put(Integer.class, new PrimitiveExtractor() {
-			public Object extract(ResultSet rs, int index) throws SQLException {
-				return Integer.valueOf(rs.getInt(index));
-			}
-		});
-		
-		extractors.put(Long.class, new PrimitiveExtractor() {
-			public Object extract(ResultSet rs, int index) throws SQLException {
-				return Long.valueOf(rs.getLong(index));
-			}
-		});
+		extractors.put(Integer.class, PrimitiveExtractor.INTEGER);
+		extractors.put(Long.class, PrimitiveExtractor.LONG);
 	}
 	
 	public DefaultConnectionFactory(String driver, String url, String user,
