@@ -8,6 +8,15 @@ import java.util.List;
 
 import lx.easydb.mapping.Table;
 
+/**
+ * Base class of {@link ValueExtractor} for objects.
+ * Overrides {@link #newInstance()} to create instances and 
+ * {@link #extract(ResultSet, Object, int, String)} to
+ * extract each field.
+ * 
+ * @author Long
+ *
+ */
 public abstract class ObjectExtractor implements ValueExtractor {
 
 	public List extract(ResultSet rs, Table table) throws SQLException {

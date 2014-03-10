@@ -1,5 +1,6 @@
 package lx.easydb.test;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -10,6 +11,12 @@ import java.util.Map;
 import junit.framework.TestCase;
 import lx.easydb.IConnection;
 import lx.easydb.IConnectionFactory;
+import lx.easydb.ObjectExtractor;
+import lx.easydb.Types;
+import lx.easydb.ValueBinder;
+import lx.easydb.mapping.Column;
+import lx.easydb.mapping.PrimaryKey;
+import lx.easydb.mapping.Table;
 
 public abstract class AbstractDbTest extends TestCase {
 	private IConnectionFactory factory;
@@ -257,6 +264,126 @@ public abstract class AbstractDbTest extends TestCase {
 		}
 	}
 	
+	public void testCRUD() {
+		IConnection conn = open();
+		
+		Table table = factory.getMapping().findTable(User.class);
+		table.getColumns().clear();
+		Column idCol = addColumn(table, "id", "id", Types.IDENTITY);
+		addColumn(table, "name", "name", Types.VARCHAR);
+		addColumn(table, "age", "age", Types.INTEGER);
+		PrimaryKey pk = new PrimaryKey();
+		pk.addColumn(idCol);
+		table.setPrimaryKey(pk);
+		
+		try {
+			conn.createTable(User.class);
+			
+			long id1 = conn.insert(User.class, new User("skywalker", 13));
+			long id2 = conn.insert(User.class, new User("vader", 23));
+			assertTrue(id2 == id1 + 1);
+			
+			User user = (User) conn.find(User.class, new Long(id2));
+			assertNotNull(user);
+			assertEquals(user.getName(), "vader");
+			assertEquals(user.getAge(), 23);
+			
+			conn.delete(User.class, user);
+			user = (User) conn.find(User.class, new Long(id2));
+			assertNull(user);
+			
+			user = (User) conn.find(User.class, new Long(id1));
+			assertNotNull(user);
+			assertEquals(user.getName(), "skywalker");
+			user.setName("vader");
+			assertTrue(conn.update(User.class, user));
+			
+			user = (User) conn.find(User.class, new Long(id1));
+			assertNotNull(user);
+			assertEquals(user.getName(), "vader");
+			assertEquals(user.getAge(), 13);
+		} catch (SQLException ex) {
+			fail(ex.getMessage());
+		} finally {
+			try {
+				conn.dropTable(User.class);
+			} catch (Exception ex) { }
+			
+			close(conn);
+		}
+	}
+	
+	public void testCustomBinderAndExtractor() {
+		IConnection conn = open();
+		
+		factory.registerBinder(User.class, new ValueBinder() {
+
+			public void bind(PreparedStatement st, Object item, int index,
+					String field, int sqlType) throws SQLException {
+				User u = (User) item;
+				if ("f1".equals(field)) {
+					st.setString(index, u.getName());
+				} else if ("f2".equals(field)) {
+					st.setInt(index, u.getAge());
+				}
+			}
+		});
+		
+		factory.registerExtractor(User.class, new ObjectExtractor() {
+
+			public void extract(ResultSet rs, Object item, int index,
+					String field) throws SQLException {
+				User u = (User) item;
+				if ("f1".equalsIgnoreCase(field)) {
+					u.setName(rs.getString(index));
+				} else if ("f2".equalsIgnoreCase(field)) {
+					// mess up id with age deliberately
+					u.setId(rs.getInt(index));
+				}
+			}
+
+			protected Object newInstance() {
+				return new User();
+			}
+		});
+		
+		try {
+			conn.executeUpdate("create table t(f1 varchar(32), f2 int)");
+			
+			assertEquals(conn.executeUpdate("insert into t (f1, f2) values (?, ?)",
+					new String[] { "f1", "f2" },
+					new User[] { new User("skywalker", 13), new User("vader", 23)}), 2);
+			
+			List list = conn.query(User.class, "select * from t");
+			assertEquals(list.size(), 2);
+			User user = (User) list.get(0);
+			assertEquals(user.getName(), "skywalker");
+			// age and id are swapped in the custom extractor
+			assertEquals(user.getAge(), 0);
+			assertEquals(user.getId(), 13);
+			
+			// unregister binder
+			factory.registerBinder(User.class, null);
+			try {
+				conn.executeUpdate("insert into t (f1, f2) values (?, ?)",
+						new String[] { "f1", "f2" },
+						new User[] { new User("skywalker", 13), new User("vader", 23)});
+				fail("Should not be here");
+			} catch (SQLException e) {
+				// should occur since no parameter is specified
+				assertNotNull(e);
+			}
+		} catch (SQLException ex) {
+			fail(ex.getMessage());
+		} finally {
+			try {
+				conn.executeUpdate("drop table t");
+			} catch (Exception ex) { }
+			
+			close(conn);
+		}
+	}
+	
 	protected IConnection open() {
 		try {
 			return factory.openConnection();
@@ -274,7 +401,14 @@ public abstract class AbstractDbTest extends TestCase {
 		}
 	}
 	
+	private static Column addColumn(Table table, String columnName, String fieldName, int dbType) {
+		Column column = new Column(columnName, fieldName, dbType);
+		table.addColumn(column);
+		return column;
+	}
+	
 	static class User {
+		private int id;
 		private String name;
 		private int age;
 		
@@ -284,6 +418,14 @@ public abstract class AbstractDbTest extends TestCase {
 		public User(String name, int age) {
 			this.name = name;
 			this.age = age;
+		}
+		
+		public int getId() {
+			return id;
+		}
+
+		public void setId(int id) {
+			this.id = id;
 		}
 
 		public String getName() {

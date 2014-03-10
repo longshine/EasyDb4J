@@ -9,7 +9,13 @@ import java.util.List;
 import java.util.Map;
 
 import lx.easydb.mapping.Table;
-
+/**
+ * {@link ValueExtractor} for {@link Map} types,
+ * extracts fields and puts them in a case-insensitive {@link LinkedHashMap}.
+ * 
+ * @author Long
+ *
+ */
 public class MapExtractor implements ValueExtractor {
 
 	public List extract(ResultSet rs, Table table) throws SQLException {
