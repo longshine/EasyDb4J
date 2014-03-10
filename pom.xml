@@ -21,16 +21,22 @@
     </developer>
   </developers>
   <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.8.1</version>
-      <scope>test</scope>
-    </dependency>
   	<dependency>
   	  <groupId>c3p0</groupId>
   	  <artifactId>c3p0</artifactId>
   	  <version>0.9.1</version>
   	</dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.2</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hsqldb</groupId>
+      <artifactId>hsqldb</artifactId>
+      <version>2.3.2</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>
