@@ -11,7 +11,7 @@ import java.sql.SQLException;
  *
  */
 public class ReflectiveBinder implements ValueBinder {
-	private static final Object[] EMPTY = new Object[0];
+	private static final Object[] EMPTY_PARAMS = new Object[0];
 
 	public void bind(PreparedStatement st, Object item, int index,
 			String field, int sqlType) throws SQLException {
@@ -20,7 +20,7 @@ public class ReflectiveBinder implements ValueBinder {
 		try {
 			Method getterMethod = item.getClass().getMethod(getterName, new Class[] { });
 			getterMethod.setAccessible(true);
-			value = getterMethod.invoke(item, EMPTY);
+			value = getterMethod.invoke(item, EMPTY_PARAMS);
 		} catch (Exception e) {
 			return;
 		}

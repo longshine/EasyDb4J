@@ -1,6 +1,5 @@
 package lx.easydb;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -19,6 +18,7 @@ import lx.easydb.mapping.Mapping;
  */
 public class DefaultConnectionFactory implements IConnectionFactory {
 	private static final ReflectiveBinder reflectiveBinder = new ReflectiveBinder();
+	private static final ReflectiveExtractor reflectiveExtractor = new ReflectiveExtractor();
 	private String driver;
 	private String url;
 	private String user;
@@ -33,27 +33,9 @@ public class DefaultConnectionFactory implements IConnectionFactory {
 		this.dataSource = dataSource;
 		this.dialect = dialect;
 		
-		binders.put(Map.class, new ValueBinder() {
-			public void bind(PreparedStatement st, Object item, int index,
-					String field, int sqlType) throws SQLException {
-				Map map = (Map) item;
-				if (sqlType == Types.EMPTY)
-					st.setObject(index, map.get(field));
-				else
-					st.setObject(index, map.get(field), sqlType);
-			}
-		});
+		binders.put(Map.class, new MapBinder());
 		
-		extractors.put(Map.class, new ObjectExtractor() {
-			public void extract(ResultSet rs, Object item, int index,
-					String field) throws SQLException {
-				Map map = (Map) item;
-				map.put(field, rs.getObject(index));
-			}
-			protected Object newInstance() {
-				return new HashMap();
-			}
-		});
+		extractors.put(Map.class, new MapExtractor());
 		
 		extractors.put(Integer.class, new PrimitiveExtractor() {
 			public Object extract(ResultSet rs, int index) throws SQLException {
@@ -102,9 +84,8 @@ public class DefaultConnectionFactory implements IConnectionFactory {
 			extractor = (ValueExtractor) extractors.get(Map.class);
 		else
 			extractor = (ValueExtractor) extractors.get(clazz);
-		if (extractor == null) {
-			// TODO reflect extractor
-		}
+		if (extractor == null)
+			extractor = reflectiveExtractor;
 		return extractor;
 	}
 
