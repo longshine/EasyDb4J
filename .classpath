@@ -7,5 +7,6 @@
 	<classpathentry kind="var" path="M2_REPO/junit/junit/3.8.2/junit-3.8.2.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/hsqldb/hsqldb/2.3.2/hsqldb-2.3.2.jar"/>
 	<classpathentry kind="var" path="M2_REPO/mysql/mysql-connector-java/5.1.29/mysql-connector-java-5.1.29.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/xerial/sqlite-jdbc/3.7.2/sqlite-jdbc-3.7.2.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

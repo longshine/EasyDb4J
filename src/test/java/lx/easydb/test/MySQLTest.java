@@ -8,7 +8,7 @@ public class MySQLTest extends AbstractDbTest {
 		super(ConnectionFactoryBuilder.newBuilder(
 				"com.mysql.jdbc.Driver",
 				"jdbc:mysql://localhost/test",
-				"root", "asdf",
+				"root", "",
 				"lx.easydb.dialect.MySQLDialect", null).build());
 	}
 }

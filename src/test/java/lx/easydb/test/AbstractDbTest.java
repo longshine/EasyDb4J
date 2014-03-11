@@ -333,7 +333,7 @@ public abstract class AbstractDbTest extends TestCase {
 		});
 		
 		try {
-			conn.executeUpdate("create table t(f1 varchar(32), f2 int)");
+			conn.executeUpdate("create table t(f1 varchar(32) not null, f2 int not null)");
 			
 			assertEquals(conn.executeUpdate("insert into t (f1, f2) values (?, ?)",
 					new String[] { "f1", "f2" },
