@@ -412,12 +412,22 @@ public abstract class AbstractDbTest extends TestCase {
 			assertEquals(id2, user.getId());
 			assertEquals("vader", user.getName());
 			
+			// test projection
 			user = (User) conn.createCriteria(User.class)
 				.setProjection(Projections.sum("age", "age"))
 				.single();
 			assertNotNull(user);
 			assertNull(user.getName());
 			assertEquals(54, user.getAge());
+			
+			// test paging
+			list = conn.createCriteria(User.class)
+					.addOrder(Order.asc("age"))
+					.list(1, 2);
+			assertEquals(1, list.size());
+			user = (User) list.get(0);
+			assertNotNull(user);
+			assertEquals("vader", user.getName());
 		} finally {
 			try {
 				conn.dropTable(User.class);
