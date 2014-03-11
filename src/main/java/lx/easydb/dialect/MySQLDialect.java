@@ -7,6 +7,9 @@ import lx.easydb.Types;
 import lx.easydb.dialect.function.NoArgSQLFunction;
 import lx.easydb.dialect.function.StandardSQLFunction;
 
+/**
+ * An SQL dialect for MySQL (prior to 5.x).
+ */
 public class MySQLDialect extends Dialect {
 	
 	public MySQLDialect() {
