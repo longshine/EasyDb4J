@@ -1,18 +1,21 @@
 package lx.easydb.mapping;
 
-import lx.easydb.StringHelper;
-
+/**
+ * Provides methods to name tables and columns
+ * by type names and property names.
+ * 
+ * @author Long
+ *
+ */
 public interface INamingStrategy {
+	/**
+	 * Maps a property name to a column name.
+	 * @param propertyName
+	 */
 	String getColumnName(String propertyName);
+	/**
+	 * Maps a type name to a table name. 
+	 * @param typeName
+	 */
 	String getTableName(String typeName);
-}
-
-class DefaultNamingStrategy implements INamingStrategy {
-    public String getColumnName(String propertyName) {
-        return StringHelper.unqualify(propertyName);
-    }
-
-    public String getTableName(String typeName) {
-        return StringHelper.unqualify(typeName);
-    }
 }
