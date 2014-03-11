@@ -14,6 +14,9 @@ import lx.easydb.IConnectionFactory;
 import lx.easydb.ObjectExtractor;
 import lx.easydb.Types;
 import lx.easydb.ValueBinder;
+import lx.easydb.criterion.Clauses;
+import lx.easydb.criterion.Order;
+import lx.easydb.criterion.Projections;
 import lx.easydb.mapping.Column;
 import lx.easydb.mapping.PrimaryKey;
 import lx.easydb.mapping.Table;
@@ -259,8 +262,12 @@ public abstract class AbstractDbTest extends TestCase {
 		try {
 			conn.createTable(User.class);
 			
-			long id1 = conn.insert(User.class, new User("skywalker", 13));
-			long id2 = conn.insert(User.class, new User("vader", 23));
+			User u1 = new User("skywalker", 13);
+			User u2 = new User("vader", 23);
+			long id1 = conn.insert(User.class, u1);
+			long id2 = conn.insert(User.class, u2);
+			assertEquals(id1, u1.getId());
+			assertEquals(id2, u2.getId());
 			assertTrue(id2 == id1 + 1);
 			
 			User user = (User) conn.find(User.class, new Long(id2));
@@ -352,8 +359,68 @@ public abstract class AbstractDbTest extends TestCase {
 				assertNotNull(e);
 			}
 		} finally {
+			factory.registerBinder(User.class, null);
+			factory.registerExtractor(User.class, null);
+			
 			try {
 				conn.executeUpdate("drop table t");
+			} catch (Exception ex) { }
+			
+			close(conn);
+		}
+	}
+	
+	public void testCriteria() throws SQLException {
+		IConnection conn = open();
+		
+		Table table = factory.getMapping().findTable(User.class);
+		table.getColumns().clear();
+		Column idCol = addColumn(table, "id", "id", Types.IDENTITY);
+		addColumn(table, "name", "name", Types.VARCHAR);
+		addColumn(table, "age", "age", Types.INTEGER);
+		PrimaryKey pk = new PrimaryKey();
+		pk.addColumn(idCol);
+		table.setPrimaryKey(pk);
+		
+		try {
+			conn.createTable(User.class);
+			
+			long id1 = conn.insert(User.class, new User("skywalker", 13));
+			long id2 = conn.insert(User.class, new User("vader", 23));
+			long id3 = conn.insert(User.class, new User("padme", 18));
+			
+			User user = (User) conn.createCriteria(User.class)
+				.add(Clauses.eq("name", "skywalker"))
+				.single();
+			assertNotNull(user);
+			assertEquals(user.getId(), id1);
+			assertEquals(user.getName(), "skywalker");
+			assertEquals(user.getAge(), 13);
+			
+			List list = conn.createCriteria(User.class)
+				.add(Clauses.between("id", new Long(id2), new Long(id3)))
+				.addOrder(Order.asc("age"))
+				.list();
+			assertEquals(2, list.size());
+			user = (User) list.get(0);
+			assertNotNull(user);
+			assertEquals(id3, user.getId());
+			assertEquals("padme", user.getName());
+			
+			user = (User) list.get(1);
+			assertNotNull(user);
+			assertEquals(id2, user.getId());
+			assertEquals("vader", user.getName());
+			
+			user = (User) conn.createCriteria(User.class)
+				.setProjection(Projections.sum("age", "age"))
+				.single();
+			assertNotNull(user);
+			assertNull(user.getName());
+			assertEquals(54, user.getAge());
+		} finally {
+			try {
+				conn.dropTable(User.class);
 			} catch (Exception ex) { }
 			
 			close(conn);

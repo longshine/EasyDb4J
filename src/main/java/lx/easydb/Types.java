@@ -1,5 +1,10 @@
 package lx.easydb;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.util.Date;
+
 /**
  * <P>The class that defines the constants that are used to identify generic
  * SQL types, called JDBC types.
@@ -7,6 +12,45 @@ package lx.easydb;
  * This class is never instantiated.
  */
 public class Types {
+	
+	/**
+	 * Gets the type code for the given Class.
+	 */
+	public static int get(Class clazz) {
+		if (clazz.isPrimitive() || Number.class.isAssignableFrom(clazz)) {
+			if (clazz == int.class || clazz == Integer.class)
+				return Types.INTEGER;
+			else if (clazz == long.class || clazz == Long.class)
+				return Types.BIGINT;
+			else if (clazz == short.class || clazz == Short.class)
+				return Types.SMALLINT;
+			else if (clazz == double.class || clazz == Double.class)
+				return Types.DOUBLE;
+			else if (clazz == float.class || clazz == Float.class)
+				return Types.FLOAT;
+			else if (clazz == byte.class || clazz == Byte.class)
+				return Types.TINYINT;
+			else if (BigDecimal.class.isAssignableFrom(clazz))
+				return Types.DECIMAL;
+			else if (BigInteger.class.isAssignableFrom(clazz))
+				return Types.BIGINT;
+		} else if (clazz == boolean.class || clazz == Boolean.class) {
+			return Types.BOOLEAN;
+		} else if (String.class.isAssignableFrom(clazz)) {
+			return Types.VARCHAR;
+		} else if (byte[].class.isAssignableFrom(clazz)) {
+			return Types.BINARY;
+		} else if (Date.class.isAssignableFrom(clazz)
+				|| Timestamp.class.isAssignableFrom(clazz)) {
+			return Types.TIMESTAMP;
+		} else if (java.sql.Date.class.isAssignableFrom(clazz)) {
+			return Types.DATE;
+		} else if (java.sql.Time.class.isAssignableFrom(clazz)) {
+			return Types.TIME;
+		}
+		
+		return Types.EMPTY;
+	}
 	
 	/**
 	 * Unspecified type.

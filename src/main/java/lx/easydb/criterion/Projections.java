@@ -97,6 +97,15 @@ public class Projections {
     public static IProjection sum(String fieldName) {
         return new AggregateProjection("sum", Clauses.field(fieldName));
     }
+    
+    /**
+     * A property value sum.
+     */
+    public static IProjection sum(String fieldName, String alias) {
+    	AggregateProjection p = new AggregateProjection("sum", Clauses.field(fieldName));
+    	p.setAlias(alias);
+    	return p;
+    }
 
     /**
      * A grouping property value.
