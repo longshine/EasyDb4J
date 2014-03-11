@@ -1,15 +1,10 @@
-/**
- * Copyright (c) 2011 SmeshLink Technology Corporation.
- * All rights reserved.
- * 
- * This file is part of the SmeshServer, a gateway middleware for WSN.
- * Please see README for more information.
- */
 package lx.easydb.criterion;
 
 import lx.easydb.ICriteria;
 
 /**
+ * Represents an order imposed upon a <tt>Criteria</tt> result set.
+ * 
  * @author Longshine
  *
  */
@@ -38,15 +33,35 @@ public class Order implements IFragment {
 		return expression + " " + (ascending ? "ASC" : "DESC");
 	}
 	
+	/**
+	 * Ascending order.
+	 * @param fieldName
+	 */
 	public static Order asc(String fieldName) {
 		return new Order(Clauses.field(fieldName), true);
 	}
 	
+	/**
+	 * Ascending order.
+	 * @param expression
+	 */
 	public static Order asc(IExpression expression) {
 		return new Order(expression, true);
 	}
 	
+	/**
+	 * Descending order.
+	 * @param fieldName
+	 */
 	public static Order desc(String fieldName) {
 		return new Order(Clauses.field(fieldName), false);
+	}
+	
+	/**
+	 * Descending order.
+	 * @param expression
+	 */
+	public static Order desc(IExpression expression) {
+		return new Order(expression, false);
 	}
 }

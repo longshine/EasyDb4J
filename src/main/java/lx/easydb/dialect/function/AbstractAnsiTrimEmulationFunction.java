@@ -8,7 +8,7 @@ import lx.easydb.QueryException;
 import lx.easydb.Types;
 
 /**
- * A {@link org.hibernate.dialect.function.SQLFunction} providing support for implementing TRIM functionality
+ * A {@link ISQLFunction} providing support for implementing TRIM functionality
  * (as defined by both the ANSI SQL and JPA specs) in cases where the dialect may not support the full <tt>trim</tt>
  * function itself.
  * <p/>

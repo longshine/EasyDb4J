@@ -5,6 +5,10 @@ import java.util.List;
 import lx.easydb.IConnectionFactory;
 import lx.easydb.QueryException;
 
+/**
+ * Provides support routines for the functions as used
+ * in the various SQL Dialects.
+ */
 public interface ISQLFunction {
 	boolean hasArguments();
 	boolean hasParenthesesIfNoArguments();

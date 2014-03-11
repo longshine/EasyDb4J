@@ -1,7 +1,15 @@
 package lx.easydb.criterion;
 
+/**
+ * Provides static factory methods to create built-in projection types.
+ * 
+ * @author Long
+ *
+ */
 public class Projections {
 
+	private Projections() { }
+	
 	/**
 	 * Creates a new projection list.
 	 */
@@ -37,6 +45,9 @@ public class Projections {
         return new CountProjection(Clauses.field(fieldName));
     }
     
+    /**
+     * A property value count.
+     */
     public static IProjection count(String fieldName, String alias) {
     	CountProjection c = new CountProjection(Clauses.field(fieldName));
     	c.setAlias(alias);
@@ -59,12 +70,18 @@ public class Projections {
         return avg(fieldName, null);
     }
     
+    /**
+     * A property average value.
+     */
     public static IProjection avg(String fieldName, String alias) {
     	AggregateProjection p = new AggregateProjection("avg", Clauses.field(fieldName));
     	p.setAlias(alias);
     	return p;
     }
 
+    /**
+     * A property maximum value.
+     */
     public static IProjection max(String fieldName) {
     	return max(fieldName, null);
     }
@@ -85,6 +102,9 @@ public class Projections {
         return min(fieldName, null);
     }
     
+    /**
+     * A property minimum value.
+     */
     public static IProjection min(String fieldName, String alias) {
     	AggregateProjection p = new AggregateProjection("min", Clauses.field(fieldName));
     	p.setAlias(alias);
@@ -137,6 +157,9 @@ public class Projections {
     	return groupExpression(exp, null);
     }
     
+    /**
+     * A grouping projected expression.
+     */
     public static IProjection groupExpression(IExpression exp, String alias) {
     	ExpressionProjection p = new ExpressionProjection();
     	p.setExpression(exp);
@@ -144,4 +167,12 @@ public class Projections {
     	p.setAlias(alias);
     	return p;
     }
+    
+    /**
+	 * Assign an alias to a projection, by wrapping it
+	 */
+	public static IProjection alias(IProjection projection, String alias) {
+		projection.setAlias(alias);
+		return projection;
+	}
 }

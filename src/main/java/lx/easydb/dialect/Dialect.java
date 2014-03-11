@@ -15,6 +15,15 @@ import lx.easydb.dialect.function.StandardAnsiSqlAggregationFunctions;
 import lx.easydb.dialect.function.StandardSQLFunction;
 import lx.easydb.mapping.Column;
 
+/**
+ * Represents a dialect of SQL implemented by a particular RDBMS.
+ * <br>
+ * Subclasses should provide a public default constructor that <tt>register()</tt>
+ * a set of type mappings.<br>
+ * <br>
+ * Subclasses should be immutable.
+ *
+ */
 public abstract class Dialect {
 	static final String QUOTES = "`\"[";
 

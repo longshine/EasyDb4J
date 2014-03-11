@@ -3,7 +3,7 @@ package lx.easydb.dialect.function;
 import lx.easydb.Types;
 
 /**
- * A {@link SQLFunction} implementation that emulates the ANSI SQL trim function
+ * A {@link ISQLFunction} implementation that emulates the ANSI SQL trim function
  * on dialects which do not support the full definition.  However, this function
  * definition does assume the availability of ltrim, rtrim, and replace functions
  * which it uses in various combinations to emulate the desired ANSI trim()
