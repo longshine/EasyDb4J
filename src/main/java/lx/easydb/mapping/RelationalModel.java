@@ -5,6 +5,12 @@ import java.util.List;
 
 import lx.easydb.dialect.Dialect;
 
+/**
+ * Base class of {@link IRelationalModel}s.
+ * 
+ * @author Long
+ *
+ */
 public abstract class RelationalModel implements IRelationalModel {
 	private List columns = new ArrayList();
 	
@@ -29,6 +35,12 @@ public abstract class RelationalModel implements IRelationalModel {
 		return doToSqlDrop(dialect, defaultCatalog, defaultSchema);
 	}
 	
+	/**
+	 * @see #toSqlCreate(Dialect, String, String)
+	 */
 	protected abstract String doToSqlCreate(Dialect dialect, String defaultCatalog, String defaultSchema);
+	/**
+	 * @see #toSqlDrop(Dialect, String, String)
+	 */
 	protected abstract String doToSqlDrop(Dialect dialect, String defaultCatalog, String defaultSchema);
 }

@@ -14,6 +14,11 @@ import lx.easydb.StringHelper;
 import lx.easydb.Types;
 import lx.easydb.dialect.Dialect;
 
+/**
+ * Represents a relational table, with {@link Column}s and {@link Constraint}s.
+ * @author Long
+ *
+ */
 public class Table implements IRelationalModel {
 	private String name;
 	private String schema;
