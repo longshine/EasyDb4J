@@ -3,6 +3,12 @@ package lx.easydb;
 import java.util.Map;
 
 import lx.easydb.dialect.Dialect;
+import lx.easydb.dialect.HSQLDialect;
+import lx.easydb.dialect.MySQLDialect;
+import lx.easydb.dialect.SQLServer2005Dialect;
+import lx.easydb.dialect.SQLServer2008Dialect;
+import lx.easydb.dialect.SQLServer2012Dialect;
+import lx.easydb.dialect.SQLiteDialect;
 
 /**
  * Builder that builds connection factories.
@@ -153,5 +159,121 @@ public class ConnectionFactoryBuilder {
 		builder.options = options;
 		builder.dialect = dialect;
 		return builder;
+	}
+
+	/**
+	 * Builds a {@link IConnectionFactory} for MySQL.
+	 * @param server the MySQL server name
+	 * @param database the database to connect
+	 * @param user the name of user
+	 * @param password the password of user
+	 * @return
+	 * @throws Exception if <code>com.mysql.jdbc.Driver</code> is not found
+	 */
+	public static IConnectionFactory buildMySQL(String server, String database,
+			String user, String password) throws Exception {
+		return newBuilder(
+				"com.mysql.jdbc.Driver",
+				"jdbc:mysql://" + server + "/" + database,
+				user, password,
+				new MySQLDialect(), null).build();
+	}
+	
+	/**
+	 * Builds a {@link IConnectionFactory} for SQLite.
+	 * @param dbFile the file name of the database
+	 * @param user the name of user
+	 * @param password the password of user
+	 * @return
+	 * @throws Exception if <code>org.sqlite.JDBC</code> driver is not found
+	 */
+	public static IConnectionFactory buildSQLite(String dbFile,
+			String user, String password) throws Exception {
+		return newBuilder(
+				"org.sqlite.JDBC",
+				"jdbc:sqlite:" + dbFile,
+				user, password,
+				new SQLiteDialect(), null).build();
+	}
+	
+	/**
+	 * Builds a {@link IConnectionFactory} for HSQLDB in-file db.
+	 * @param dbFile the file name of the database
+	 * @param user the name of user
+	 * @param password the password of user
+	 * @return
+	 * @throws Exception if <code>org.hsqldb.jdbcDriver</code> is not found
+	 */
+	public static IConnectionFactory buildHSQLDB(String dbFile,
+			String user, String password) throws Exception {
+		return newBuilder(
+				"org.hsqldb.jdbcDriver",
+				"jdbc:hsqldb:file:" + dbFile,
+				user, password,
+				new HSQLDialect(), null).build();
+	}
+	
+	/**
+	 * Builds a {@link IConnectionFactory} for SQL Server.
+	 * @param server the server name of the SQL Server
+	 * @param database the database to connect
+	 * @param user the name of user
+	 * @param password the password of user
+	 * @param dialect the dialect to use
+	 * @return
+	 * @throws Exception if <code>com.microsoft.sqlserver.jdbc.SQLServerDriver<code> is not found
+	 */
+	public static IConnectionFactory buildSQLServer(String server, String database,
+			String user, String password, Dialect dialect) throws Exception {
+		return newBuilder(
+				"com.microsoft.sqlserver.jdbc.SQLServerDriver",
+				"jdbc:sqlserver://" + server + ";database=" + database,
+				user, password,
+				dialect, null).build();
+	}
+	
+	/**
+	 * Builds a {@link IConnectionFactory} for SQL Server 2005.
+	 * @param server the server name of the SQL Server
+	 * @param database the database to connect
+	 * @param user the name of user
+	 * @param password the password of user
+	 * @return
+	 * @throws Exception if <code>com.microsoft.sqlserver.jdbc.SQLServerDriver<code> is not found
+	 */
+	public static IConnectionFactory buildSQLServer2005(String server, String database,
+			String user, String password) throws Exception {
+		return buildSQLServer(server, database, user, password,
+				new SQLServer2005Dialect());
+	}
+	
+	/**
+	 * Builds a {@link IConnectionFactory} for SQL Server 2008.
+	 * @param server the server name of the SQL Server
+	 * @param database the database to connect
+	 * @param user the name of user
+	 * @param password the password of user
+	 * @return
+	 * @throws Exception if <code>com.microsoft.sqlserver.jdbc.SQLServerDriver<code> is not found
+	 */
+	public static IConnectionFactory buildSQLServer2008(String server, String database,
+			String user, String password) throws Exception {
+		return buildSQLServer(server, database, user, password,
+				new SQLServer2008Dialect());
+	}
+	
+	/**
+	 * Builds a {@link IConnectionFactory} for SQL Server 2012.
+	 * @param server the server name of the SQL Server
+	 * @param database the database to connect
+	 * @param user the name of user
+	 * @param password the password of user
+	 * @return
+	 * @throws Exception if <code>com.microsoft.sqlserver.jdbc.SQLServerDriver<code> is not found
+	 */
+	public static IConnectionFactory buildSQLServer2012(String server, String database,
+			String user, String password) throws Exception {
+		return buildSQLServer(server, database, user, password,
+				new SQLServer2012Dialect());
 	}
 }
