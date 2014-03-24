@@ -51,9 +51,11 @@ Example usage:
 class User {
   private int id;
   private String name;
-  private String password;
   /* getters and setters are ommitted */
 }
+
+/* create table */
+conn.executeUpdate("create table user (id int, un varchar(32))");
 
 /* query all users without parameters */
 ResultSet rs1 = conn.executeQuery("select * from user");
@@ -105,15 +107,19 @@ Example usage:
 
 ``` java
 class User {
-  private int id;
   private String name;
   private String password;
   /* getters and setters are ommitted */
 }
 
+/* create table */
+conn.executeUpdate("create table user (un varchar(32), up varchar(32))");
+
+/* params from an array of strings */
 conn.executeUpdate("insert into user (un, up) values (?, ?)",
     new Object[] { "user1", "pass1" });
 
+/* params from an object of User */
 conn.executeUpdate("insert into user (un, up) values (?, ?)",
     new String[] { "name", "password" },
     new User("user2", "pass2"));
@@ -128,6 +134,7 @@ List list = new ArrayList();
 list.add(new User("user1", "pass1"));
 list.add(new User("user2", "pass2"));
 
+/* params from a list of users */
 conn.executeUpdate("insert into user (un, up) values (?, ?)",
     new String[] { "name", "password" },
     list);
@@ -153,5 +160,61 @@ List list = conn.query("select * from user");
 Map userMap = (Map) list.get(0);
 ```
 
+2. Entity query
+---------------
+
+The connection factory has an object-relational mapping　mechanism
+inside so that it is quite simple to query with strong-typed
+entities.
+
+### CRUD
+
+Basic operations of CRUD.
+
+Example usage:
+
+``` java
+class User {
+  private int id;
+  private String name;
+  private String password;
+  /* getters and setters are ommitted */
+}
+
+/* create a table named 'user' */
+conn.createTable(User.class);
+
+/* insert a user */
+long id = conn.insert(User.class, new User("user1", "pass1"));
+
+/* find a user */
+User user1 = conn.find(User.class, new Long(id));
+
+/* and update the user's info */
+user1.setPassword("passModified");
+conn.update(User.class, user1);
+
+/* finally delete the user */
+conn.delete(User.class, user1);
+```
+
+Overloads are provided to query by a entitiy's name instead
+of its class.
+
+Example usage:
+``` java
+/* register an entity named "user_entity" of the User class */
+factory.getMapping()
+  .registerTable("user_entity",
+    factory.getMapping().findTable(User.class));
+
+/* evertything else goes the same */
+conn.createTable("user_entity");
+conn.insert("user_entity", new User("user1", "pass1"));
+User user1 = conn.find("user_entity", new Long(id));
+conn.update("user_entity", user1);
+conn.delete("user_entity", user1);
+
+```
 
 
