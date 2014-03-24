@@ -5,7 +5,9 @@ EasyDb4J is a simple yet functional database helper which helps
 dealing with queries and object-relational mappings, with the
 single interface <code>IConnection</code>. It has features like:
 
-* 
+* [statement-free SQL query] (#1-sql-query)
+* [entity query with ORMs] (#2-entity-query)
+* [OO styled criterion query] (#3-criterion-query)
 
 0. Prelude
 ----------
@@ -21,6 +23,9 @@ IConnectionFactory factory = ConnectionFactoryBuilder.buildSQLite("test.db", "us
 
 Of course a corresponding JDBC driver should be included in the
 classpath, otherwise you would get a <code>ClassNotFoundException</code>.
+
+By default, a C3P0 <code>ComboPooledDataSource</code> will be used
+as the inner connection pool.
 
 Once a connection factory is setted up, you can get a connection
 by a single call:
@@ -152,13 +157,17 @@ List query(String sql, Object[] params = null);
 List query(String sql, String[] paramNames = null, Object item = null);
 ```
 
-
 Example usage:
 
 ``` java
 List list = conn.query("select * from user");
 Map userMap = (Map) list.get(0);
 ```
+
+### Fall back
+
+Since the <code>IConnection</code> extends the <code>java.sql.Connection</code>
+interface, you may still use original methods to do whatever you want.
 
 2. Entity query
 ---------------
@@ -202,6 +211,7 @@ Overloads are provided to query by a entitiy's name instead
 of its class.
 
 Example usage:
+
 ``` java
 /* register an entity named "user_entity" of the User class */
 factory.getMapping()
@@ -217,4 +227,55 @@ conn.delete("user_entity", user1);
 
 ```
 
+### query
+
+Executes a query and returns list of strong-typed objects.
+
+``` java
+List query(Class clazz, String sql, String[] paramNames = null, Object item = null);
+/* or */
+List query(String entity, String sql, String[] paramNames = null, Object item = null);
+```
+
+Example usage:
+
+``` java
+List list1 = conn.query(User.class, "select * from user");
+/* or */
+List list2 = conn.query("user_entity", "select * from user");
+```
+
+3. Criterion query
+------------------
+
+Queries can be built in an object-oriented way, like Hibernate.
+
+### Creating a <code>ICriteria</code> instance
+
+<code>ICriteria</code> represents a query of a specific entity.
+
+``` java
+ICriteria cri = conn.createCriteria(User.class);
+```
+
+### Narrowing the result set
+
+The class <code>Clauses</code> defines factory methods for
+obtaining built-in criterion types.
+
+``` java
+List list = conn.createCriteria(User.class)
+    .add(Clauses.between("id", new Long(1), new Long(3)))
+    .add(Clauses.like("name", "Ja%"))
+    .list();
+```
+
+### Ordering the results
+
+``` java
+List list = conn.createCriteria(User.class)
+    .add(Clauses.like("name", "Ja%"))
+    .addOrder(Order.asc("age"))
+    .list();
+```
 
