@@ -29,8 +29,12 @@ public class ReflectiveExtractor implements ValueExtractor {
 			Object obj = newInstance(table);
 			
 			for (int i = 1; i <= count; i++) {
-				String columnName = rsmd.getColumnName(i);
-				extract(rs, obj, i, table == null ? columnName : table.getFieldName(columnName));
+				String columnName = rsmd.getColumnName(i), fieldName = null;
+				if (table != null)
+					fieldName = table.getFieldName(columnName);
+				if (fieldName == null)
+					fieldName = columnName;
+				extract(rs, obj, i, fieldName);
 			}
 			
 			list.add(obj);

@@ -415,7 +415,7 @@ public class Table implements IRelationalModel {
 	
 	public String getFieldName(String columnName) {
         Column column = findColumnByColumnName(columnName);
-        return column == null ? columnName : column.getFieldName();
+        return column == null ? null : column.getFieldName();
     }
 
 	public void setEntityClass(Class entityClass) {
