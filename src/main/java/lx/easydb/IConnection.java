@@ -640,7 +640,7 @@ class ConnectionWrapper implements IConnection {
 	}
 	
 	public List query(Class clazz, String sql, Collection paramNames, Object item) throws SQLException {
-		Table table = factory.getMapping().findTable(clazz.getName());
+		Table table = factory.getMapping().findTable(clazz);
 		return queryInternal(clazz, table, sql, paramNames, null, item);
 	}
 	
@@ -734,7 +734,7 @@ class ConnectionWrapper implements IConnection {
 	}
 	
 	public boolean existTable(Class clazz) {
-		return existTable(factory.getMapping().getTable(clazz));
+		return existTable(factory.getMapping().findTable(clazz));
 	}
 
 	public void createTable(String entity) throws SQLException {
@@ -742,7 +742,7 @@ class ConnectionWrapper implements IConnection {
 	}
 	
 	public void createTable(Class clazz) throws SQLException {
-		createTable(factory.getMapping().getTable(clazz));
+		createTable(factory.getMapping().findTable(clazz));
 	}
 
 	public void dropTable(String entity) throws SQLException {
@@ -750,7 +750,7 @@ class ConnectionWrapper implements IConnection {
 	}
 
 	public void dropTable(Class clazz) throws SQLException {
-		dropTable(factory.getMapping().getTable(clazz));
+		dropTable(factory.getMapping().findTable(clazz));
 	}
 	
 	public boolean delete(String entity, Object item) throws SQLException {
@@ -758,7 +758,7 @@ class ConnectionWrapper implements IConnection {
 	}
 	
 	public boolean delete(Class clazz, Object item) throws SQLException {
-		return delete(factory.getMapping().getTable(clazz), item);
+		return delete(factory.getMapping().findTable(clazz), item);
 	}
 
 	public long insert(String entity, Object item) throws SQLException {
@@ -766,7 +766,7 @@ class ConnectionWrapper implements IConnection {
 	}
 
 	public long insert(Class clazz, Object item) throws SQLException {
-		return insert(factory.getMapping().getTable(clazz), item);
+		return insert(factory.getMapping().findTable(clazz), item);
 	}
 
 	public boolean update(String entity, Object item) throws SQLException {
@@ -774,7 +774,7 @@ class ConnectionWrapper implements IConnection {
 	}
 
 	public boolean update(Class clazz, Object item) throws SQLException {
-		return update(factory.getMapping().getTable(clazz), item);
+		return update(factory.getMapping().findTable(clazz), item);
 	}
 
 	public Object find(String entity, Object id) throws SQLException, QueryException {
@@ -782,7 +782,7 @@ class ConnectionWrapper implements IConnection {
 	}
 	
 	public Object find(Class clazz, Object id) throws SQLException, QueryException {
-		return find(factory.getMapping().getTable(clazz), id);
+		return find(factory.getMapping().findTable(clazz), id);
 	}
 
 	private boolean existTable(Table table) {
