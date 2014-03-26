@@ -20,6 +20,7 @@ public class Column {
 	private String checkConstraint;
 	private String sqlType;
 	private boolean updatable = true;
+	private IMemberMap memberInfo;
 	
 	public Column(String columnName, String fieldName, int dbType) {
 		this.name = columnName;
@@ -133,5 +134,13 @@ public class Column {
 
 	public void setUpdatable(boolean updatable) {
 		this.updatable = updatable;
+	}
+	
+	public IMemberMap getMemberInfo() {
+		return memberInfo;
+	}
+	
+	public void setMemberInfo(IMemberMap memberInfo) {
+		this.memberInfo = memberInfo;
 	}
 }

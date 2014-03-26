@@ -3,6 +3,7 @@ package lx.easydb;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -47,22 +48,32 @@ public class ReflectiveExtractor implements ValueExtractor {
 		Field fieldObj;
 		try {
 			fieldObj = item.getClass().getDeclaredField(field);
-		} catch (NoSuchFieldException e1) {
-			fieldObj = null;
-		}
-		if (fieldObj == null)
+		} catch (NoSuchFieldException e) {
 			return;
+		}
 		
 		int sqlType = Types.get(fieldObj.getType());
-		
-		String setterName = "set" + field.substring(0, 1).toUpperCase() + field.substring(1);
 		Object value = getValue(rs, index, sqlType);
-		try {
-			Method setterMethod = item.getClass().getMethod(setterName, new Class[] { fieldObj.getType() });
-			setterMethod.setAccessible(true);
-			setterMethod.invoke(item, new Object[] { value });
-		} catch (Exception e) {
-			return;
+		
+		if (Modifier.isPublic(fieldObj.getModifiers())
+				&& !Modifier.isStatic(fieldObj.getModifiers())
+				&& !Modifier.isFinal(fieldObj.getModifiers())) {
+			try {
+				fieldObj.setAccessible(true);
+				fieldObj.set(item, value);
+			} catch (IllegalAccessException e) {
+				// ignore
+			}
+		} else {
+			String setterName = "set" + field.substring(0, 1).toUpperCase() + field.substring(1);
+			
+			try {
+				Method setterMethod = item.getClass().getMethod(setterName, new Class[] { fieldObj.getType() });
+				setterMethod.setAccessible(true);
+				setterMethod.invoke(item, new Object[] { value });
+			} catch (Exception e) {
+				// ignore
+			}
 		}
 	}
 	

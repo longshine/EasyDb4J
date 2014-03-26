@@ -1,6 +1,8 @@
 package lx.easydb;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
@@ -15,14 +17,34 @@ public class ReflectiveBinder implements ValueBinder {
 
 	public void bind(PreparedStatement st, Object item, int index,
 			String field, int sqlType) throws SQLException {
-		String getterName = "get" + field.substring(0, 1).toUpperCase() + field.substring(1);
-		Object value;
+		Field fieldObj;
 		try {
-			Method getterMethod = item.getClass().getMethod(getterName, new Class[] { });
-			getterMethod.setAccessible(true);
-			value = getterMethod.invoke(item, EMPTY_PARAMS);
-		} catch (Exception e) {
-			return;
+			fieldObj = item.getClass().getDeclaredField(field);
+		} catch (NoSuchFieldException e1) {
+			fieldObj = null;
+		}
+		
+		Object value = null;
+		
+		if (fieldObj != null
+				&& Modifier.isPublic(fieldObj.getModifiers())
+				&& !Modifier.isStatic(fieldObj.getModifiers())
+				&& !Modifier.isFinal(fieldObj.getModifiers())) {
+			try {
+				fieldObj.setAccessible(true);
+				value = fieldObj.get(item);
+			} catch (IllegalAccessException e) {
+				// ignore
+			}
+		} else {
+			String getterName = "get" + field.substring(0, 1).toUpperCase() + field.substring(1);
+			try {
+				Method getterMethod = item.getClass().getMethod(getterName, new Class[] { });
+				getterMethod.setAccessible(true);
+				value = getterMethod.invoke(item, EMPTY_PARAMS);
+			} catch (Exception e) {
+				// ignore
+			}
 		}
 		
 		if (sqlType == Types.EMPTY)

@@ -1,6 +1,7 @@
 package lx.easydb.mapping;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,29 +44,38 @@ public class Table implements IRelationalModel {
 		
 		Field[] fields = clazz.getDeclaredFields();
 		for (int i = 0; i < fields.length; i++) {
-			if (Modifier.isStatic(fields[i].getModifiers())
-					|| Modifier.isFinal(fields[i].getModifiers()))
+			Field field = fields[i];
+			if (Modifier.isStatic(field.getModifiers())
+					|| Modifier.isFinal(field.getModifiers()))
 				continue;
-			String fieldName = fields[i].getName();
-			if (!Modifier.isPublic(fields[i].getModifiers())) {
+			String fieldName = field.getName();
+			if (Modifier.isPublic(field.getModifiers())) {
+				Column column = new Column(namingStrategy.getColumnName(fieldName), fieldName,
+						Types.get(field.getType()));
+				column.setMemberInfo(new SimpleMemberMap(column.getName(), field));
+				addColumn(column);
+			} else {
 				String getterName = "get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+				Method getter;
 				try {
-					clazz.getMethod(getterName, new Class[] { });
+					getter = clazz.getMethod(getterName, new Class[] { });
 				} catch (Exception e) {
 					continue;
 				}
 				
 				String setterName = "set" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+				Method setter;
 				try {
-					clazz.getMethod(setterName, new Class[] { fields[i].getType() });
+					setter = clazz.getMethod(setterName, new Class[] { field.getType() });
 				} catch (Exception e) {
 					continue;
 				}
+				
+				Column column = new Column(namingStrategy.getColumnName(fieldName), fieldName,
+						Types.get(field.getType()));
+				column.setMemberInfo(new SimpleMemberMap(column.getName(), field, getter, setter));
+				addColumn(column);
 			}
-			
-			Column column = new Column(namingStrategy.getColumnName(fieldName), fieldName,
-					Types.get(fields[i].getType()));
-			addColumn(column);
 		}
 		
 		Column idCol = findColumnByFieldName("id");
