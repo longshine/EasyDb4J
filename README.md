@@ -224,7 +224,6 @@ conn.insert("user_entity", new User("user1", "pass1"));
 User user1 = conn.find("user_entity", new Long(id));
 conn.update("user_entity", user1);
 conn.delete("user_entity", user1);
-
 ```
 
 ### query
@@ -279,3 +278,83 @@ List list = conn.createCriteria(User.class)
     .list();
 ```
 
+4. Advanced
+-----------
+
+### Custom ORMs
+
+Object-relational mappings help map an object class to a relational
+table and vice versa. EasyDb4J uses <code>Table</code>s to define
+ORMs. Besides, two interfaces, <code>ValueBinder</code> and 
+<code>ValueExtractor</code>, tell the library how to process mappings.
+The former one reads values of fields from an object and sets them
+to a query <code>Statement</code>, while the latter one extracts
+values from a <code>ResultSet</code> of a query and then injects
+them into an object.
+
+#### Table
+
+A <code>Table</code> is a description of a relational table,
+consisted of several <code>Column</code>s representing the mapping
+between a field in an object class and a column in the relational
+table, and constraints on the table, including <code>PrimaryKey</code>
+and <code>UniqueKey</code>.
+
+Normally, it is not necessary to initialize a <code>Table</code>
+manually. Before any [Entity query] (#2-entity-query), the **factory**
+will detect the corresponding <code>Table</code> instance, and will
+automatically create one if none is found, with default naming strategy.
+
+For example, we have a class like:
+
+``` java
+class EntityClass {
+  private int id;
+  private String fieldOfString;
+  /* getters and setters are ommitted */
+}
+```
+
+When we call <code>conn.insert(EntityClass.class, new EntityClass())</code>,
+a mapped <code>Table</code> will be generated with names in a
+underscode-seperated, lowercase style as follow:
+
+<pre>
+  class EntityClass  =>  table entity_class
+    id                     id
+    fieldOfString          field_of_string
+</pre>
+
+If you want a different naming style, you should define custom tables.
+Example usage:
+
+``` java
+Table table = new Table();
+
+/* set table name and class */
+table.setName("entityClass");
+table.setEntityClass(EntityClass.class);
+
+/* add columns */
+Column idCol = new Column("id", "id", Types.IDENTITY);
+table.addColumn(column);
+
+Column stringCol = new Column("fieldOfString", "fieldOfString", Types.VARCHAR);
+table.addColumn(column);
+
+/* add primary key */
+PrimaryKey pk = new PrimaryKey();
+pk.addColumn(idCol);
+table.setPrimaryKey(pk);
+
+/* finally register the table in the connection factory */
+factory.getMapping().registerTable(EntityClass.class, table);
+```
+
+#### ValueBinder & ValueExtractor
+
+// TODO
+
+### Dialecting
+
+// TODO
