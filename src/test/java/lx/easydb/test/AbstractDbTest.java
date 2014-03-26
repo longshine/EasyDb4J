@@ -9,11 +9,11 @@ import java.util.List;
 import java.util.Map;
 
 import junit.framework.TestCase;
+import lx.easydb.AbstractValueBinder;
 import lx.easydb.IConnection;
 import lx.easydb.IConnectionFactory;
 import lx.easydb.ObjectExtractor;
 import lx.easydb.Types;
-import lx.easydb.ValueBinder;
 import lx.easydb.criterion.Clauses;
 import lx.easydb.criterion.Order;
 import lx.easydb.criterion.Projections;
@@ -301,7 +301,7 @@ public abstract class AbstractDbTest extends TestCase {
 	public void testCustomBinderAndExtractor() throws SQLException {
 		IConnection conn = open();
 		
-		factory.registerBinder(User.class, new ValueBinder() {
+		factory.registerBinder(User.class, new AbstractValueBinder() {
 
 			public void bind(PreparedStatement st, Object item, int index,
 					String field, int sqlType) throws SQLException {
@@ -437,6 +437,63 @@ public abstract class AbstractDbTest extends TestCase {
 		}
 	}
 	
+	public void testQueryPrimaryKey() throws SQLException {
+		IConnection conn = open();
+		
+		factory.getMapping().registerTable(User.class, new Table(User.class, factory.getMapping().getNamingStrategy()));
+		
+		try {
+			User user = new User();
+			user.setId(2);
+			user.setName("test");
+			user.setAge(18);
+			conn.createTable(User.class);
+			long id = conn.insert(User.class, user);
+			assertEquals(id, 0);
+			user = (User) conn.find(User.class, new Integer(2));
+			assertNotNull(user);
+			assertEquals(user.getId(), 2);
+			assertEquals(user.getName(), "test");
+			assertEquals(user.getAge(), 18);
+		} finally {
+			try {
+				conn.dropTable(User.class);
+			} catch (Exception ex) { }
+			
+			try {
+				conn.executeUpdate("drop table t");
+			} catch (Exception ex) { }
+			
+			close(conn);
+		}
+	}
+	
+	public void testPublicField() throws SQLException {
+		IConnection conn = open();
+		
+		try {
+			ObjectWithPublicField o1 = new ObjectWithPublicField();
+			o1.setId(2);
+			o1.name = "public";
+			conn.createTable(ObjectWithPublicField.class);
+			conn.insert(ObjectWithPublicField.class, o1);
+			ObjectWithPublicField o2 = (ObjectWithPublicField) conn.find(ObjectWithPublicField.class, new Integer(2));
+			assertNotNull(o2);
+			assertEquals(o2.getId(), o1.getId());
+			assertEquals(o2.name, o1.name);
+		} finally {
+			try {
+				conn.dropTable(ObjectWithPublicField.class);
+			} catch (Exception ex) { }
+			
+			try {
+				conn.executeUpdate("drop table t");
+			} catch (Exception ex) { }
+			
+			close(conn);
+		}
+	}
+	
 	protected IConnection open() {
 		try {
 			return factory.openConnection();
@@ -459,42 +516,59 @@ public abstract class AbstractDbTest extends TestCase {
 		table.addColumn(column);
 		return column;
 	}
+}
+
+class User {
+	private int id;
+	private String name;
+	private int age;
 	
-	static class User {
-		private int id;
-		private String name;
-		private int age;
+	public User() {
+	}
+	
+	public User(String name, int age) {
+		this.name = name;
+		this.age = age;
+	}
+	
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public int getAge() {
+		return age;
+	}
+
+	public void setAge(int age) {
+		this.age = age;
+	}
+}
+
+class ObjectWithPublicField {
+	private int id;
+	public String name;
+	
+	public ObjectWithPublicField() {
 		
-		public User() {
-		}
-		
-		public User(String name, int age) {
-			this.name = name;
-			this.age = age;
-		}
-		
-		public int getId() {
-			return id;
-		}
+	}
+	
+	public int getId() {
+		return id;
+	}
 
-		public void setId(int id) {
-			this.id = id;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
-
-		public int getAge() {
-			return age;
-		}
-
-		public void setAge(int age) {
-			this.age = age;
-		}
+	public void setId(int id) {
+		this.id = id;
 	}
 }
