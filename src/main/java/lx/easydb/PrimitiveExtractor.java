@@ -13,7 +13,7 @@ import lx.easydb.mapping.Table;
  * @author Long
  *
  */
-public abstract class PrimitiveExtractor implements ValueExtractor {
+public abstract class PrimitiveExtractor extends AbstractValueExtractor {
 	/**
 	 * {@link ValueExtractor} for integers.
 	 */

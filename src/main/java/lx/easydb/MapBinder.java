@@ -4,7 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Map;
 
-public class MapBinder implements ValueBinder {
+public class MapBinder extends AbstractValueBinder {
 
 	public void bind(PreparedStatement st, Object item, int index,
 			String field, int sqlType) throws SQLException {

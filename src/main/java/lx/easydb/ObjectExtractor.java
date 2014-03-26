@@ -17,7 +17,7 @@ import lx.easydb.mapping.Table;
  * @author Long
  *
  */
-public abstract class ObjectExtractor implements ValueExtractor {
+public abstract class ObjectExtractor extends AbstractValueExtractor {
 
 	public List extract(ResultSet rs, Table table) throws SQLException {
 		ArrayList list = new ArrayList();

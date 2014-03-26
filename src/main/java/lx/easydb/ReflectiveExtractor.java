@@ -10,6 +10,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import lx.easydb.mapping.Column;
+import lx.easydb.mapping.IMemberMap;
 import lx.easydb.mapping.Table;
 
 /**
@@ -18,7 +20,7 @@ import lx.easydb.mapping.Table;
  * @author Long
  *
  */
-public class ReflectiveExtractor implements ValueExtractor {
+public class ReflectiveExtractor extends AbstractValueExtractor {
 	private static final Class[] EMPTY_CLASSES = new Class[0];
 	private static final Object[] EMPTY_PARAMS = new Object[0];
 	
@@ -30,17 +32,59 @@ public class ReflectiveExtractor implements ValueExtractor {
 			Object obj = newInstance(table);
 			
 			for (int i = 1; i <= count; i++) {
-				String columnName = rsmd.getColumnName(i), fieldName = null;
+				String columnName = rsmd.getColumnName(i);
+				Column column = null;
 				if (table != null)
-					fieldName = table.getFieldName(columnName);
-				if (fieldName == null)
-					fieldName = columnName;
-				extract(rs, obj, i, fieldName);
+					column = table.findColumnByColumnName(columnName);
+				if (column == null)
+					extract(rs, obj, i, columnName);
+				else
+					extract(rs, obj, i, column);
 			}
 			
 			list.add(obj);
 		}
 		return list;
+	}
+	
+	public void extract(ResultSet rs, Object item, int index, Column column) throws SQLException {
+		IMemberMap mi = column.getMemberInfo();
+		if (mi == null) {
+			super.extract(rs, item, index, column);
+			return;
+		}
+		
+		Field fieldObj = mi.getField();
+		if (fieldObj == null) {
+			super.extract(rs, item, index, column);
+			return;
+		}
+		
+		int sqlType = Types.get(fieldObj.getType());
+		Object value = getValue(rs, index, sqlType);
+		Method setterMethod = mi.getSetter();
+		
+		if (setterMethod != null) {
+			try {
+				boolean accessible = setterMethod.isAccessible();
+				setterMethod.setAccessible(true);
+				setterMethod.invoke(item, new Object[] { value });
+				setterMethod.setAccessible(accessible);
+			} catch (Exception e) {
+				// ignore
+			}
+		} else if (Modifier.isPublic(fieldObj.getModifiers())
+				&& !Modifier.isStatic(fieldObj.getModifiers())
+				&& !Modifier.isFinal(fieldObj.getModifiers())) {
+			try {
+				boolean accessible = fieldObj.isAccessible();
+				fieldObj.setAccessible(true);
+				fieldObj.set(item, value);
+				fieldObj.setAccessible(accessible);
+			} catch (IllegalAccessException e) {
+				// ignore
+			}
+		}
 	}
 
 	public void extract(ResultSet rs, Object item, int index, String field)
