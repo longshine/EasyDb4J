@@ -31,8 +31,10 @@ public class ReflectiveBinder implements ValueBinder {
 				&& !Modifier.isStatic(fieldObj.getModifiers())
 				&& !Modifier.isFinal(fieldObj.getModifiers())) {
 			try {
+				boolean accessible = fieldObj.isAccessible();
 				fieldObj.setAccessible(true);
 				value = fieldObj.get(item);
+				fieldObj.setAccessible(accessible);
 			} catch (IllegalAccessException e) {
 				// ignore
 			}
@@ -40,8 +42,10 @@ public class ReflectiveBinder implements ValueBinder {
 			String getterName = "get" + field.substring(0, 1).toUpperCase() + field.substring(1);
 			try {
 				Method getterMethod = item.getClass().getMethod(getterName, new Class[] { });
+				boolean accessible = getterMethod.isAccessible();
 				getterMethod.setAccessible(true);
 				value = getterMethod.invoke(item, EMPTY_PARAMS);
+				getterMethod.setAccessible(accessible);
 			} catch (Exception e) {
 				// ignore
 			}

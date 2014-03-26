@@ -59,8 +59,10 @@ public class ReflectiveExtractor implements ValueExtractor {
 				&& !Modifier.isStatic(fieldObj.getModifiers())
 				&& !Modifier.isFinal(fieldObj.getModifiers())) {
 			try {
+				boolean accessible = fieldObj.isAccessible();
 				fieldObj.setAccessible(true);
 				fieldObj.set(item, value);
+				fieldObj.setAccessible(accessible);
 			} catch (IllegalAccessException e) {
 				// ignore
 			}
@@ -69,8 +71,10 @@ public class ReflectiveExtractor implements ValueExtractor {
 			
 			try {
 				Method setterMethod = item.getClass().getMethod(setterName, new Class[] { fieldObj.getType() });
+				boolean accessible = setterMethod.isAccessible();
 				setterMethod.setAccessible(true);
 				setterMethod.invoke(item, new Object[] { value });
+				setterMethod.setAccessible(accessible);
 			} catch (Exception e) {
 				// ignore
 			}
