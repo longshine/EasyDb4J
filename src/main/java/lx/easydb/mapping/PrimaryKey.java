@@ -6,6 +6,20 @@ import lx.easydb.StringHelper;
 import lx.easydb.dialect.Dialect;
 
 public class PrimaryKey extends Constraint {
+	
+	public PrimaryKey() {
+		
+	}
+	
+	public PrimaryKey(Column column) {
+		addColumn(column);
+	}
+	
+	public PrimaryKey(Column[] columns) {
+		for (int i = 0; i < columns.length; i++) {
+			addColumn(columns[i]);
+		}
+	}
 
 	public String toSqlConstraintString(Dialect dialect) {
         StringBuffer sb = StringHelper.createBuilder().append("primary key (");
