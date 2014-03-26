@@ -63,9 +63,14 @@ public class Table implements IRelationalModel {
 				}
 			}
 			
-			Column column = new Column(namingStrategy.getColumnName(fieldName), fieldName, Types.NULL);
+			Column column = new Column(namingStrategy.getColumnName(fieldName), fieldName,
+					Types.get(fields[i].getType()));
 			addColumn(column);
 		}
+		
+		Column idCol = findColumnByFieldName("id");
+		if (idCol != null)
+			setPrimaryKey(new PrimaryKey(idCol));
 	}
 	
 	public void setName(String name) {
