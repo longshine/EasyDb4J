@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import lx.easydb.mapping.Column;
 import lx.easydb.mapping.Table;
 
 /**
@@ -13,7 +14,7 @@ import lx.easydb.mapping.Table;
  * @author Long
  *
  */
-public abstract class PrimitiveExtractor extends AbstractValueExtractor {
+public abstract class PrimitiveExtractor implements ValueExtractor {
 	/**
 	 * {@link ValueExtractor} for integers.
 	 */
@@ -30,9 +31,10 @@ public abstract class PrimitiveExtractor extends AbstractValueExtractor {
 		}
 		return list;
 	}
-
-	public void extract(ResultSet rs, Object item, int index,
-			String field) throws SQLException {
+	
+	public void extract(ResultSet rs, Object item, int index, Column column)
+			throws SQLException {
+		// do nothing
 	}
 	
 	protected abstract Object extract(ResultSet rs, int index) throws SQLException;

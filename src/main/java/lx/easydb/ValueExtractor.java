@@ -24,17 +24,7 @@ public interface ValueExtractor {
 	 */
 	List extract(ResultSet rs, Table table) throws SQLException;
 	/**
-	 * Reads a property named <code>field</code> from a {@link ResultSet}
-	 * and set it to the given object.
-	 * @param rs the {@link ResultSet} to read
-	 * @param item the object to set
-	 * @param index the index of the field in the {@link ResultSet}
-	 * @param field the name of the field
-	 * @throws SQLException
-	 */
-	void extract(ResultSet rs, Object item, int index, String field) throws SQLException;
-	/**
-	 * Reads a property named <code>field</code> from a {@link ResultSet}
+	 * Reads a property mapped by <code>column</code> from a {@link ResultSet}
 	 * and set it to the given object.
 	 * @param rs the {@link ResultSet} to read
 	 * @param item the object to set

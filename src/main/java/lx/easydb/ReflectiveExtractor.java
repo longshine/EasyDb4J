@@ -20,7 +20,7 @@ import lx.easydb.mapping.Table;
  * @author Long
  *
  */
-public class ReflectiveExtractor extends AbstractValueExtractor {
+public class ReflectiveExtractor implements ValueExtractor {
 	private static final Class[] EMPTY_CLASSES = new Class[0];
 	private static final Object[] EMPTY_PARAMS = new Object[0];
 	
@@ -50,13 +50,13 @@ public class ReflectiveExtractor extends AbstractValueExtractor {
 	public void extract(ResultSet rs, Object item, int index, Column column) throws SQLException {
 		IMemberMap mi = column.getMemberInfo();
 		if (mi == null) {
-			super.extract(rs, item, index, column);
+			extract(rs, item, index, column.getFieldName());
 			return;
 		}
 		
 		Field fieldObj = mi.getField();
 		if (fieldObj == null) {
-			super.extract(rs, item, index, column);
+			extract(rs, item, index, column.getFieldName());
 			return;
 		}
 		
