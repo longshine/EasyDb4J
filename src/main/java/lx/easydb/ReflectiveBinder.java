@@ -54,10 +54,7 @@ public class ReflectiveBinder extends AbstractValueBinder {
 			}
 		}
 		
-		if (sqlType == Types.EMPTY)
-			st.setObject(index, value);
-		else
-			st.setObject(index, value, sqlType);
+		setObject(st, index, value, sqlType);
 	}
 	
 	public void bind(PreparedStatement st, Object item, int index, Column column)
@@ -95,13 +92,6 @@ public class ReflectiveBinder extends AbstractValueBinder {
 			}
 		}
 		
-		int dbType = column.getDbType();
-		if (dbType == Types.IDENTITY)
-			dbType = Types.EMPTY;
-		
-		if (dbType == Types.EMPTY)
-			st.setObject(index, value);
-		else
-			st.setObject(index, value, dbType);
+		setObject(st, index, value, column.getDbType());
 	}
 }

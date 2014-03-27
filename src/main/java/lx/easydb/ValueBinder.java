@@ -27,7 +27,7 @@ public interface ValueBinder {
 	void bind(PreparedStatement st, Object item, int index, String field,
 			int sqlType) throws SQLException;
 	/**
-	 * Reads a parameter named <code>field</code> from
+	 * Reads a parameter mapped by <code>column</code> from
 	 * the specified object, and set it to the given
 	 * {@link PreparedStatement}.
 	 * @param st the {@link PreparedStatement} to bind
