@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>lx.easydb</groupId>
   <artifactId>easydb</artifactId>
-  <version>0.3</version>
+  <version>0.6</version>
   <packaging>jar</packaging>
   <name>EasyDb</name>
   <properties>
