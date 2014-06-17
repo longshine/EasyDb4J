@@ -1089,29 +1089,32 @@ class ConnectionWrapper implements IConnection {
 		return connection.isWrapperFor(arg0);
 	}
 
+	public Object unwrap(Class iface) throws SQLException {
+		return connection.unwrap(iface);
+	}
+
 	public void setSchema(String schema) throws SQLException {
-		connection.setSchema(schema);
+		ReflectHelper.invokeSilent(connection, "setSchema", new Class[] { String.class }, new Object[] { schema });
 	}
 
 	public String getSchema() throws SQLException {
-		return connection.getSchema();
+		return (String) ReflectHelper.invokeSilent(connection, "getSchema", null, null);
 	}
 
 	public void abort(java.util.concurrent.Executor executor) throws SQLException {
-		connection.abort(executor);
+		ReflectHelper.invokeSilent(connection, "abort",
+				new Class[] { java.util.concurrent.Executor.class }, new Object[] { executor });
 	}
 
 	public void setNetworkTimeout(java.util.concurrent.Executor executor, int milliseconds)
 			throws SQLException {
-		connection.setNetworkTimeout(executor, milliseconds);
+		ReflectHelper.invokeSilent(connection, "setNetworkTimeout",
+				new Class[] { java.util.concurrent.Executor.class, int.class },
+				new Object[] { executor, new Integer(milliseconds) });
 	}
 
 	public int getNetworkTimeout() throws SQLException {
-		return connection.getNetworkTimeout();
-	}
-
-	public Object unwrap(Class iface) throws SQLException {
-		return connection.unwrap(iface);
+		return ((Integer) ReflectHelper.invokeSilent(connection, "getNetworkTimeout", null, null)).intValue();
 	}
 }
 
@@ -1945,11 +1948,15 @@ class ResultSetWrapper implements ResultSet {
 	}
 
 	public Object getObject(int columnIndex, Class type) throws SQLException {
-		return rs.getObject(columnIndex, type);
+		return ReflectHelper.invokeSilent(rs, "getObject",
+				new Class[] { int.class, Class.class },
+				new Object[] { new Integer(columnIndex), type });
 	}
 
 	public Object getObject(String columnLabel, Class type) throws SQLException {
-		return rs.getObject(columnLabel, type);
+		return ReflectHelper.invokeSilent(rs, "getObject",
+				new Class[] { String.class, Class.class },
+				new Object[] { columnLabel, type });
 	}
 	
 }

@@ -18,6 +18,8 @@ import java.sql.Struct;
 import java.util.Map;
 import java.util.Properties;
 
+import lx.easydb.ReflectHelper;
+
 /**
  * An {@link IDataSource} which holds a {@link Connection}
  * as a singleton. It never closes the inner connection really.
@@ -256,29 +258,32 @@ public class SingletonDataSource extends DataSource {
 			return this.conn.isWrapperFor(arg0);
 		}
 
+		public Object unwrap(Class iface) throws SQLException {
+			return conn.unwrap(iface);
+		}
+
 		public void setSchema(String schema) throws SQLException {
-			conn.setSchema(schema);
+			ReflectHelper.invokeSilent(conn, "setSchema", new Class[] { String.class }, new Object[] { schema });
 		}
 
 		public String getSchema() throws SQLException {
-			return conn.getSchema();
+			return (String) ReflectHelper.invokeSilent(conn, "getSchema", null, null);
 		}
 
 		public void abort(java.util.concurrent.Executor executor) throws SQLException {
-			conn.abort(executor);
+			ReflectHelper.invokeSilent(conn, "abort",
+					new Class[] { java.util.concurrent.Executor.class }, new Object[] { executor });
 		}
 
 		public void setNetworkTimeout(java.util.concurrent.Executor executor, int milliseconds)
 				throws SQLException {
-			conn.setNetworkTimeout(executor, milliseconds);
+			ReflectHelper.invokeSilent(conn, "setNetworkTimeout",
+					new Class[] { java.util.concurrent.Executor.class, int.class },
+					new Object[] { executor, new Integer(milliseconds) });
 		}
 
 		public int getNetworkTimeout() throws SQLException {
-			return conn.getNetworkTimeout();
-		}
-
-		public Object unwrap(Class iface) throws SQLException {
-			return conn.unwrap(iface);
+			return ((Integer) ReflectHelper.invokeSilent(conn, "getNetworkTimeout", null, null)).intValue();
 		}
 	}
 }
