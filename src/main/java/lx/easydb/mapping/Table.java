@@ -384,6 +384,7 @@ public class Table implements IRelationalModel {
             .append("update ").append(getQualifiedName(dialect, defaultCatalog, defaultSchema))
             .append(" set ");
 		
+		int oldLen = sbSql.length();
 		boolean append = false;
 		Iterator it = getColumns().iterator();
 		while (it.hasNext()) {
@@ -402,6 +403,10 @@ public class Table implements IRelationalModel {
 				append = true;
 			}
 		}
+		
+		if (sbSql.length() == oldLen)
+			// nothing to update
+			return null;
 		
         if (hasPrimaryKey()) {
             sbSql.append(" where ");

@@ -844,7 +844,7 @@ class ConnectionWrapper implements IConnection {
 		String sql = table.toSqlUpdate(factory.getDialect(),
 				factory.getMapping().getCatalog(), factory.getMapping().getSchema(), paramColumns);
 		
-		return executeUpdate(sql, paramColumns, item) > 0;
+		return sql == null ? false : executeUpdate(sql, paramColumns, item) > 0;
 	}
 
 	private boolean delete(Table table, Object item) throws SQLException {

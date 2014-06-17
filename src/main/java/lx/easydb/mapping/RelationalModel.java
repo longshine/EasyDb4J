@@ -12,7 +12,7 @@ import lx.easydb.dialect.Dialect;
  *
  */
 public abstract class RelationalModel implements IRelationalModel {
-	private List columns = new ArrayList();
+	private List columns = new ArrayList(2);
 	
 	public List getColumns() {
 		return columns;
