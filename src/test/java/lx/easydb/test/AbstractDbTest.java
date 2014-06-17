@@ -18,6 +18,7 @@ import lx.easydb.criterion.Clauses;
 import lx.easydb.criterion.Order;
 import lx.easydb.criterion.Projections;
 import lx.easydb.mapping.Column;
+import lx.easydb.mapping.Mapping;
 import lx.easydb.mapping.PrimaryKey;
 import lx.easydb.mapping.Table;
 
@@ -494,6 +495,48 @@ public abstract class AbstractDbTest extends TestCase {
 		}
 	}
 	
+	public void testMappingAnnotation() throws SQLException {
+		IConnection conn = open();
+		
+		try {
+			conn.createTable(UserWithAnnotation.class);
+			
+			UserWithAnnotation u1 = new UserWithAnnotation("skywalker", 13);
+			UserWithAnnotation u2 = new UserWithAnnotation("vader", 23);
+			long id1 = conn.insert(UserWithAnnotation.class, u1);
+			long id2 = conn.insert(UserWithAnnotation.class, u2);
+			assertEquals(id1, u1.getId());
+			assertEquals(id2, u2.getId());
+			assertTrue("id should be auto incremental", id2 == id1 + 1);
+			
+			UserWithAnnotation user = (UserWithAnnotation) conn.find(UserWithAnnotation.class, new Long(id2));
+			assertNotNull(user);
+			assertEquals("vader", user.getName());
+			assertEquals("age should NOT be stored", 0, user.getAge());
+			
+			conn.delete(UserWithAnnotation.class, user);
+			user = (UserWithAnnotation) conn.find(UserWithAnnotation.class, new Long(id2));
+			assertNull(user);
+			
+			user = (UserWithAnnotation) conn.find(UserWithAnnotation.class, new Long(id1));
+			assertNotNull(user);
+			assertEquals("skywalker", user.getName());
+			user.setName("vader");
+			assertTrue(conn.update(UserWithAnnotation.class, user));
+			
+			user = (UserWithAnnotation) conn.find(UserWithAnnotation.class, new Long(id1));
+			assertNotNull(user);
+			assertEquals("name should NOT be updated", "skywalker", user.getName());
+			assertEquals("age should NOT be stored", 0, user.getAge());
+		} finally {
+			try {
+				conn.dropTable(UserWithAnnotation.class);
+			} catch (Exception ex) { }
+			
+			close(conn);
+		}
+	}
+	
 	protected IConnection open() {
 		try {
 			return factory.openConnection();
@@ -551,6 +594,49 @@ class User {
 		return age;
 	}
 
+	public void setAge(int age) {
+		this.age = age;
+	}
+}
+
+class UserWithAnnotation {
+	@Mapping.PrimaryKey
+	@Mapping.Column(name = "auto_id", type = Types.IDENTITY)
+	private int id;
+	private String name;
+	private int age;
+	public int dummy;
+	
+	public UserWithAnnotation() {
+	}
+	
+	public UserWithAnnotation(String name, int age) {
+		this.name = name;
+		this.age = age;
+	}
+	
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	@Mapping.Column(updatable = false)
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public int getAge() {
+		return age;
+	}
+
+	@Mapping.Ignore
 	public void setAge(int age) {
 		this.age = age;
 	}

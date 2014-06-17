@@ -1,9 +1,15 @@
 package lx.easydb.mapping;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.HashMap;
 import java.util.Map;
 
 import lx.easydb.MappingException;
+import lx.easydb.Types;
 
 /**
  * Stores O-R mappings.
@@ -108,5 +114,40 @@ public class Mapping {
 
 	public String getCatalog() {
 		return catalog;
+	}
+
+	/**
+	 * Indicates the details of the column mapped with this field.
+	 * @author Long
+	 */
+	@Documented
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target({ ElementType.FIELD, ElementType.METHOD })
+	public static @interface Column {
+		String name() default "";
+		int type() default Types.EMPTY;
+		boolean updatable() default true;
+	}
+
+	/**
+	 * Indicates that this field is the primary key or one of primary keys. 
+	 * @author Long
+	 */
+	@Documented
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target({ ElementType.FIELD, ElementType.METHOD })
+	public static @interface PrimaryKey {
+		
+	}
+
+	/**
+	 * Indicates that this field should be ignored and not be persisted.
+	 * @author Long
+	 */
+	@Documented
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target({ ElementType.FIELD, ElementType.METHOD })
+	public static @interface Ignore {
+		
 	}
 }

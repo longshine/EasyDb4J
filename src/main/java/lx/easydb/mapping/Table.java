@@ -1,5 +1,6 @@
 package lx.easydb.mapping;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -45,18 +46,16 @@ public class Table implements IRelationalModel {
 		Field[] fields = clazz.getDeclaredFields();
 		for (int i = 0; i < fields.length; i++) {
 			Field field = fields[i];
+			
 			if (Modifier.isStatic(field.getModifiers())
 					|| Modifier.isFinal(field.getModifiers()))
 				continue;
+
 			String fieldName = field.getName();
-			if (Modifier.isPublic(field.getModifiers())) {
-				Column column = new Column(namingStrategy.getColumnName(fieldName), fieldName,
-						Types.get(field.getType()));
-				column.setMemberInfo(new SimpleMemberMap(column.getName(), field));
-				addColumn(column);
-			} else {
+			Method getter = null, setter = null;
+			if (!Modifier.isPublic(field.getModifiers())) {
 				String getterName = "get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
-				Method getter;
+				
 				try {
 					getter = clazz.getMethod(getterName, new Class[] { });
 				} catch (Exception e) {
@@ -64,23 +63,53 @@ public class Table implements IRelationalModel {
 				}
 				
 				String setterName = "set" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
-				Method setter;
 				try {
 					setter = clazz.getMethod(setterName, new Class[] { field.getType() });
 				} catch (Exception e) {
 					continue;
 				}
-				
-				Column column = new Column(namingStrategy.getColumnName(fieldName), fieldName,
-						Types.get(field.getType()));
-				column.setMemberInfo(new SimpleMemberMap(column.getName(), field, getter, setter));
-				addColumn(column);
+			}
+			
+			if (getAnnotation(Mapping.Ignore.class, field, getter, setter) != null)
+				continue;
+			
+			Mapping.Column colAnn = getAnnotation(Mapping.Column.class, field, getter, setter);
+			String colName = colAnn == null || colAnn.name() == null || colAnn.name().length() == 0 ?
+					namingStrategy.getColumnName(fieldName) : colAnn.name();
+			int colType = colAnn == null || colAnn.type() == Types.EMPTY ?
+					Types.get(field.getType()) : colAnn.type();
+			
+			Column column = new Column(colName, fieldName, colType);
+			column.setMemberInfo(new SimpleMemberMap(column.getName(), field, getter, setter));
+			if (colAnn != null)
+				column.setUpdatable(colAnn.updatable());
+			addColumn(column);
+			
+			if (getAnnotation(Mapping.PrimaryKey.class, field, getter, setter) != null) {
+				PrimaryKey pk = getPrimaryKey();
+				if (pk == null) {
+					pk = new PrimaryKey();
+					setPrimaryKey(pk);
+				}
+				pk.addColumn(column);
 			}
 		}
 		
-		Column idCol = findColumnByFieldName("id");
-		if (idCol != null)
-			setPrimaryKey(new PrimaryKey(idCol));
+		if (getPrimaryKey() == null) {
+			Column idCol = findColumnByFieldName("id");
+			if (idCol != null)
+				setPrimaryKey(new PrimaryKey(idCol));
+		}
+	}
+	
+	private static <T extends Annotation> T getAnnotation(Class<T> annotationClass,
+			Field field, Method getter, Method setter) {
+		T a = field.getAnnotation(annotationClass);
+		if (a == null && getter != null)
+			a = getter.getAnnotation(annotationClass);
+		if (a == null && setter != null)
+			a = setter.getAnnotation(annotationClass);
+		return a;
 	}
 	
 	public void setName(String name) {
