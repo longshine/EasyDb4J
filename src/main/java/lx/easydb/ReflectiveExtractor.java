@@ -21,8 +21,6 @@ import lx.easydb.mapping.Table;
  *
  */
 public class ReflectiveExtractor implements ValueExtractor {
-	private static final Class[] EMPTY_CLASSES = new Class[0];
-	private static final Object[] EMPTY_PARAMS = new Object[0];
 	
 	public List extract(ResultSet rs, Table table) throws SQLException {
 		ArrayList list = new ArrayList();
@@ -127,10 +125,10 @@ public class ReflectiveExtractor implements ValueExtractor {
 	
 	protected Object newInstance(Table table) throws QueryException {
 		try {
-			Constructor c = table.getEntityClass().getConstructor(EMPTY_CLASSES);
+			Constructor c = table.getEntityClass().getConstructor(ReflectHelper.EMPTY_CLASSES);
 			c.setAccessible(true);
-			return c.newInstance(EMPTY_PARAMS);
-		} catch (ReflectiveOperationException e) {
+			return c.newInstance(ReflectHelper.EMPTY_PARAMS);
+		} catch (Exception e) {
 			throw new QueryException(e);
 		}
 	}
