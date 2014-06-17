@@ -1,6 +1,8 @@
 Easy Database Helper for JAVA
 =============================
 
+[![Build Status](https://api.travis-ci.org/longshine/EasyDb4J.svg)](https://travis-ci.org/longshine/EasyDb4J)
+
 EasyDb4J is a simple yet functional database helper which helps
 dealing with queries and object-relational mappings, with the
 single interface <code>IConnection</code>. It has features like:
