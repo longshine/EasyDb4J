@@ -21,6 +21,7 @@ import lx.easydb.dialect.Dialect;
  * @author Long
  *
  */
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class Table implements IRelationalModel {
 	private String name;
 	private String schema;
@@ -40,7 +41,14 @@ public class Table implements IRelationalModel {
 	}
 	
 	public Table(Class clazz, INamingStrategy namingStrategy) {
-		setName(namingStrategy.getTableName(clazz.getName()));
+		String typeName = null;
+		Mapping.Table tableAnn = (Mapping.Table) clazz.getAnnotation(Mapping.Table.class);
+		if (tableAnn != null)
+			typeName = tableAnn.name();
+		if (typeName == null)
+			typeName = namingStrategy.getTableName(clazz.getName());
+		
+		setName(typeName);
 		setEntityClass(clazz);
 		
 		Field[] fields = clazz.getDeclaredFields();

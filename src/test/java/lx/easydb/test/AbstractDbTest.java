@@ -22,6 +22,7 @@ import lx.easydb.mapping.Mapping;
 import lx.easydb.mapping.PrimaryKey;
 import lx.easydb.mapping.Table;
 
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public abstract class AbstractDbTest extends TestCase {
 	private IConnectionFactory factory;
 	
@@ -495,6 +496,26 @@ public abstract class AbstractDbTest extends TestCase {
 		}
 	}
 	
+	public void testMappingTableAnnotation() throws SQLException {
+		IConnection conn = open();
+		
+		try {
+			conn.createTable(UserWithAnnotation.class);
+			
+			try {
+				conn.executeQuery("select * from user_annotation").close();
+			} catch (Exception e) {
+				fail(e.getMessage());
+			}
+		} finally {
+			try {
+				conn.dropTable(UserWithAnnotation.class);
+			} catch (Exception ex) { }
+			
+			close(conn);
+		}
+	}
+	
 	public void testMappingAnnotation() throws SQLException {
 		IConnection conn = open();
 		
@@ -599,6 +620,7 @@ class User {
 	}
 }
 
+@Mapping.Table(name = "user_annotation")
 class UserWithAnnotation {
 	@Mapping.PrimaryKey
 	@Mapping.Column(name = "auto_id", type = Types.IDENTITY)
