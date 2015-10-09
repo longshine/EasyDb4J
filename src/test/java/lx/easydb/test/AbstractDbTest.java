@@ -24,7 +24,7 @@ import lx.easydb.mapping.Table;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public abstract class AbstractDbTest extends TestCase {
-	private IConnectionFactory factory;
+	protected final IConnectionFactory factory;
 	
 	public AbstractDbTest(IConnectionFactory factory) {
 		this.factory = factory;
@@ -503,7 +503,11 @@ public abstract class AbstractDbTest extends TestCase {
 			conn.createTable(UserWithAnnotation.class);
 			
 			try {
-				conn.executeQuery("select * from user_annotation").close();
+				conn.executeQuery("select * from "
+						+ factory.getDialect().openQuote()
+						+ "user_annotation"
+						+ factory.getDialect().closeQuote())
+					.close();
 			} catch (Exception e) {
 				fail(e.getMessage());
 			}
