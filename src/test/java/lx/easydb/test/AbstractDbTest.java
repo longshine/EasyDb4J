@@ -22,7 +22,7 @@ import lx.easydb.mapping.PrimaryKey;
 import lx.easydb.mapping.Table;
 
 public abstract class AbstractDbTest extends TestCase {
-	private IConnectionFactory factory;
+	protected IConnectionFactory factory;
 	
 	public AbstractDbTest(IConnectionFactory factory) {
 		this.factory = factory;
