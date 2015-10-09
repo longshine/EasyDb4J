@@ -13,5 +13,5 @@ public interface ISQLFunction {
 	boolean hasArguments();
 	boolean hasParenthesesIfNoArguments();
 	int getReturnType(int firstArgumentType);
-	String render(int firstArgumentType, List arguments, IConnectionFactory factory) throws QueryException;
+	String render(int firstArgumentType, @SuppressWarnings("rawtypes") List arguments, IConnectionFactory factory) throws QueryException;
 }

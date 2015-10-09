@@ -31,7 +31,7 @@ public final class StringHelper {
 		}
 	}
 	
-	public static String join(String seperator, Iterator objects) {
+	public static String join(String seperator, @SuppressWarnings("rawtypes") Iterator objects) {
 		StringBuffer sb = new StringBuffer();
 		if (objects.hasNext())
 			sb.append(objects.next());

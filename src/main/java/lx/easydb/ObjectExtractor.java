@@ -20,6 +20,7 @@ import lx.easydb.mapping.Table;
  */
 public abstract class ObjectExtractor implements ValueExtractor {
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public List extract(ResultSet rs, Table table) throws SQLException {
 		ArrayList list = new ArrayList();
 		ResultSetMetaData rsmd = rs.getMetaData();

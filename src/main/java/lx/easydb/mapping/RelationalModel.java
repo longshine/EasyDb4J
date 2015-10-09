@@ -11,6 +11,7 @@ import lx.easydb.dialect.Dialect;
  * @author Long
  *
  */
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public abstract class RelationalModel implements IRelationalModel {
 	private List columns = new ArrayList(2);
 	

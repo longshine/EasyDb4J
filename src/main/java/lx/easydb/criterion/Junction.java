@@ -11,6 +11,7 @@ import lx.easydb.StringHelper;
  *
  */
 public class Junction implements IExpression {
+	@SuppressWarnings("rawtypes")
 	private ArrayList expressions = new ArrayList();
 	private String op;
 	
@@ -18,10 +19,12 @@ public class Junction implements IExpression {
 		this.op = op;
 	}
 	
+	@SuppressWarnings("rawtypes")
 	public List getExpressions() {
 		return this.expressions;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public Junction add(IExpression exp) {
 		expressions.add(exp);
 		return this;

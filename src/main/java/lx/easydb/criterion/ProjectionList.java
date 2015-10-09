@@ -7,6 +7,7 @@ import java.util.List;
 import lx.easydb.ICriteria;
 import lx.easydb.StringHelper;
 
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class ProjectionList implements IProjection {
 	private List projections = new ArrayList();
 

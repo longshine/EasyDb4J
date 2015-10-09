@@ -5,6 +5,7 @@ import java.util.List;
 import lx.easydb.ICriteria;
 
 public class RowCountProjection extends SimpleProjection {
+	@SuppressWarnings("rawtypes")
 	public static List ARGS = java.util.Collections.singletonList( "*" );
 	
 	public String render(ICriteria criteria) {

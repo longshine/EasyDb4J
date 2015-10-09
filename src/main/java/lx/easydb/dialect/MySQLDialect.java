@@ -144,6 +144,7 @@ public class MySQLDialect extends Dialect {
 		registerFunction("concat", new StandardSQLFunction( "concat", Types.VARCHAR));
 		
 		registerFunction("date", new StandardSQLFunction("date_format") {
+			@SuppressWarnings({ "unchecked", "rawtypes" })
 			protected String doRender(int firstArgumentType, List arguments, IConnectionFactory factory) {
 				arguments.add("'%Y-%m-%d'");
 				return super.doRender(firstArgumentType, arguments, factory);

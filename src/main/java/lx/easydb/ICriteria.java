@@ -46,6 +46,7 @@ public interface ICriteria {
 	 * @return the list of matched query results
 	 * @throws SQLException
 	 */
+	@SuppressWarnings("rawtypes")
 	List list() throws SQLException;
 	/**
 	 * Gets the results.
@@ -54,6 +55,7 @@ public interface ICriteria {
 	 * @return the list of matched query results
 	 * @throws SQLException
 	 */
+	@SuppressWarnings("rawtypes")
 	List list(int total, int offset) throws SQLException;
 	/**
 	 * Counts the results.

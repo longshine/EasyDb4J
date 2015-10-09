@@ -12,6 +12,7 @@ import java.util.Map;
  * @author Long
  *
  */
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class MapExtractor extends ObjectExtractor {
 	public static final int ORIGIN = 0;
 	public static final int LOWERCASE = -1;

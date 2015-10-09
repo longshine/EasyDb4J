@@ -22,6 +22,7 @@ public class ConnectionFactoryBuilder {
 	private String user;
 	private String password;
 	private Dialect dialect;
+	@SuppressWarnings("rawtypes")
 	private Map options;
 
 	protected ConnectionFactoryBuilder() {
@@ -85,7 +86,7 @@ public class ConnectionFactoryBuilder {
 	 * Sets the map of other options.
 	 * @return itself
 	 */
-	public ConnectionFactoryBuilder setOptions(Map options) {
+	public ConnectionFactoryBuilder setOptions(@SuppressWarnings("rawtypes") Map options) {
 		this.options = options;
 		return this;
 	}
@@ -102,7 +103,7 @@ public class ConnectionFactoryBuilder {
 	 * @param map the map of options
 	 * @throws Exception if fail to initialize the dialect given in the map
 	 */
-	public static ConnectionFactoryBuilder newBuilder(Map map) throws Exception {
+	public static ConnectionFactoryBuilder newBuilder(@SuppressWarnings("rawtypes") Map map) throws Exception {
 		ConnectionFactoryBuilder builder = new ConnectionFactoryBuilder();
 		builder.driver = (String) map.get("driver");
 		builder.url = (String) map.get("url");
@@ -127,7 +128,7 @@ public class ConnectionFactoryBuilder {
 	 * @throws Exception if fail to initialize the dialect
 	 */
 	public static ConnectionFactoryBuilder newBuilder(String driver, String url,
-			String user, String password, String dialect, Map options) throws Exception {
+			String user, String password, String dialect, @SuppressWarnings("rawtypes") Map options) throws Exception {
 		ConnectionFactoryBuilder builder = new ConnectionFactoryBuilder();
 		builder.driver = driver;
 		builder.url = url;
@@ -150,7 +151,7 @@ public class ConnectionFactoryBuilder {
 	 * @param options the map of other options
 	 */
 	public static ConnectionFactoryBuilder newBuilder(String driver, String url,
-			String user, String password, Dialect dialect, Map options) {
+			String user, String password, Dialect dialect, @SuppressWarnings("rawtypes") Map options) {
 		ConnectionFactoryBuilder builder = new ConnectionFactoryBuilder();
 		builder.driver = driver;
 		builder.url = url;

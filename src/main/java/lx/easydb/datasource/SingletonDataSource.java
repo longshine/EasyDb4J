@@ -142,6 +142,7 @@ public class SingletonDataSource extends DataSource {
 			return this.conn.getTransactionIsolation();
 		}
 
+		@SuppressWarnings({ "rawtypes", "unchecked" })
 		public Map getTypeMap() throws SQLException {
 			return this.conn.getTypeMap();
 		}
@@ -250,15 +251,17 @@ public class SingletonDataSource extends DataSource {
 			this.conn.setTransactionIsolation(level);
 		}
 
-		public void setTypeMap(Map arg0) throws SQLException {
+		@SuppressWarnings("unchecked")
+		public void setTypeMap(@SuppressWarnings("rawtypes") Map arg0) throws SQLException {
 			this.conn.setTypeMap(arg0);
 		}
 
-		public boolean isWrapperFor(Class arg0) throws SQLException {
+		public boolean isWrapperFor(@SuppressWarnings("rawtypes") Class arg0) throws SQLException {
 			return this.conn.isWrapperFor(arg0);
 		}
 
-		public Object unwrap(Class iface) throws SQLException {
+		@SuppressWarnings("unchecked")
+		public Object unwrap(@SuppressWarnings("rawtypes") Class iface) throws SQLException {
 			return conn.unwrap(iface);
 		}
 

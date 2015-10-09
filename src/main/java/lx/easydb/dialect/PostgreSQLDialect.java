@@ -165,7 +165,7 @@ public class PostgreSQLDialect extends Dialect {
 			return Types.INTEGER;
 		}
 
-		public String render(int firstArgumentType, List args, IConnectionFactory factory) throws QueryException {
+		public String render(int firstArgumentType, @SuppressWarnings("rawtypes") List args, IConnectionFactory factory) throws QueryException {
 			boolean threeArgs = args.size() > 2;
 			Object pattern = args.get(0);
 			Object string = args.get(1);

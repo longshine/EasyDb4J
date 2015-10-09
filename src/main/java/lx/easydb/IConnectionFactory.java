@@ -11,6 +11,7 @@ import lx.easydb.mapping.Mapping;
  * @author Long
  *
  */
+@SuppressWarnings("rawtypes")
 public interface IConnectionFactory {
 	/**
 	 * Gets an opened connection.

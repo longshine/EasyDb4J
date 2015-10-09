@@ -14,7 +14,8 @@ public class StandardAnsiSqlAggregationFunctions {
 	public static final StandardSQLFunction Min = new MinFunction();
 	public static final StandardSQLFunction Sum = new SumFunction();
 
-	public static void registerFunctions(Map functionMap) {
+	@SuppressWarnings("unchecked")
+	public static void registerFunctions(@SuppressWarnings("rawtypes") Map functionMap) {
 		functionMap.put(Avg.getName(), Avg);
 		functionMap.put(Count.getName(), Count);
 		functionMap.put(Max.getName(), Max);
@@ -31,7 +32,7 @@ public class StandardAnsiSqlAggregationFunctions {
 			super("count", Types.BIGINT);
 		}
 
-		protected String doRender(int firstArgumentType, List arguments, IConnectionFactory factory) {
+		protected String doRender(int firstArgumentType, @SuppressWarnings("rawtypes") List arguments, IConnectionFactory factory) {
 			if (arguments.size() > 1) {
 				if ("distinct".equalsIgnoreCase(arguments.get(0).toString())) {
 					return renderCountDistinct(arguments);
@@ -40,6 +41,7 @@ public class StandardAnsiSqlAggregationFunctions {
 			return super.doRender(firstArgumentType, arguments, factory);
 		}
 
+		@SuppressWarnings("rawtypes")
 		private String renderCountDistinct(List arguments) {
 			StringBuffer buffer = new StringBuffer();
 			buffer.append("count(distinct ");

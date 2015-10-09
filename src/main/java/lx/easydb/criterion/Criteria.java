@@ -24,6 +24,7 @@ import lx.easydb.mapping.Table;
  * @author Long
  *
  */
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class Criteria implements ICriteria, ICriteriaRender {
 	private List conditions = new ArrayList();
 	private IProjection projection;

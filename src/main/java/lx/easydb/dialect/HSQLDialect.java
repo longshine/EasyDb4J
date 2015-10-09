@@ -20,6 +20,7 @@ public class HSQLDialect extends Dialect {
 		super();
 
 		try {
+			@SuppressWarnings("rawtypes")
 			Class props = Class.forName("org.hsqldb.persist.HsqlDatabaseProperties");
 			String versionString = (String) props.getDeclaredField(
 					"THIS_VERSION").get(null);
@@ -138,6 +139,7 @@ public class HSQLDialect extends Dialect {
 		registerFunction("concat", new VarArgsSQLFunction(Types.VARCHAR, "(", "||", ")"));
 		
 		registerFunction("date", new StandardSQLFunction("to_char") {
+			@SuppressWarnings({ "unchecked", "rawtypes" })
 			protected String doRender(int firstArgumentType, List arguments, IConnectionFactory factory) {
 				arguments.add("'yyyy-mm-dd'");
 				return super.doRender(firstArgumentType, arguments, factory);

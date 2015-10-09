@@ -42,6 +42,7 @@ public abstract class AbstractAnsiTrimEmulationFunction implements ISQLFunction 
 	/**
 	 * {@inheritDoc}
 	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public final String render(int argumentType, List args, IConnectionFactory factory) throws QueryException {
 		// According to both the ANSI-SQL and JPA specs, trim takes a variable number of parameters between 1 and 4.
 		// at least one paramer (trimSource) is required.  From the SQL spec:

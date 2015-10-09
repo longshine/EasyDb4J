@@ -16,7 +16,7 @@ public class Types {
 	/**
 	 * Gets the type code for the given Class.
 	 */
-	public static int get(Class clazz) {
+	public static int get(@SuppressWarnings("rawtypes") Class clazz) {
 		if (clazz.isPrimitive() || Number.class.isAssignableFrom(clazz)) {
 			if (clazz == int.class || clazz == Integer.class)
 				return Types.INTEGER;

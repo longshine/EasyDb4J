@@ -19,7 +19,7 @@ public class CastFunction implements ISQLFunction {
 		return columnType; // this is really just a guess, unless the caller properly identifies the 'type' argument here
 	}
 
-	public String render(int columnType, List args, IConnectionFactory factory) throws QueryException {
+	public String render(int columnType, @SuppressWarnings("rawtypes") List args, IConnectionFactory factory) throws QueryException {
 		if ( args.size()!=2 ) {
 			throw new QueryException("cast() requires two arguments");
 		}

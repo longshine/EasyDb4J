@@ -300,6 +300,7 @@ public class Clauses {
 	 * key set of a <tt>Map</tt>
 	 * @param fieldNameValues a map from property names to values
 	 */
+	@SuppressWarnings("rawtypes")
 	public static Conjunction allEq(Map fieldNameValues) {
 		Conjunction conj = conjunction();
 		for (Iterator it = fieldNameValues.entrySet().iterator(); it.hasNext(); ) {

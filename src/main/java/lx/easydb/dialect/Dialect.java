@@ -28,6 +28,7 @@ public abstract class Dialect {
 	static final String QUOTES = "`\"[";
 
 	private TypeNames typeNames = new TypeNames();
+	@SuppressWarnings("rawtypes")
 	private final Map sqlFunctions = new HashMap();
 
 	public static boolean isQuoted(String s) {
@@ -334,6 +335,7 @@ public abstract class Dialect {
         return getTypeName(type, Column.DEFAULT_LENGTH, Column.DEFAULT_PRECISION, Column.DEFAULT_SCALE);
     }
 	
+	@SuppressWarnings("unchecked")
 	protected void registerFunction(String name, ISQLFunction function) {
 		sqlFunctions.put(name, function);
 	}
@@ -346,6 +348,7 @@ public abstract class Dialect {
 		typeNames.put(type, capacity, name);
     }
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	static class TypeNames {
 		private HashMap weighted = new HashMap();
 		private HashMap defaults = new HashMap();

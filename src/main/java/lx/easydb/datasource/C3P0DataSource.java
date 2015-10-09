@@ -16,7 +16,7 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
 public class C3P0DataSource extends DataSource {
 	private ComboPooledDataSource dataSource;
 	
-	public C3P0DataSource(String driver, String url, String user, String password, Map options) throws Exception {
+	public C3P0DataSource(String driver, String url, String user, String password, @SuppressWarnings("rawtypes") Map options) throws Exception {
 		super(driver, url, user, password);
 		this.dataSource = new ComboPooledDataSource();
 		this.dataSource.setDriverClass(driver);
@@ -61,7 +61,7 @@ public class C3P0DataSource extends DataSource {
 		return this.dataSource.getConnection();
 	}
 	
-	private static int readInt(Map map, String key, int def) {
+	private static int readInt(@SuppressWarnings("rawtypes") Map map, String key, int def) {
 		int result = def;
 		if (map != null && map.containsKey(key)) {
 			try {

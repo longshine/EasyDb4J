@@ -3,6 +3,7 @@ package lx.easydb;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+@SuppressWarnings("rawtypes")
 public final class ReflectHelper {
 	public static final Class[] EMPTY_CLASSES = new Class[0];
 	public static final Object[] EMPTY_PARAMS = EMPTY_CLASSES;

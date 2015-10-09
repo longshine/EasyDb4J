@@ -30,6 +30,7 @@ public class AggregateProjection extends SimpleProjection {
     	return functionName + "(" + expression + ')';
 	}
 	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public List buildFunctionParameterList(ICriteria criteria) {
 		List list = new ArrayList();
 		list.add(expression.render(criteria));

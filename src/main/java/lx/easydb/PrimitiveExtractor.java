@@ -24,6 +24,7 @@ public abstract class PrimitiveExtractor implements ValueExtractor {
 	 */
 	public static final PrimitiveExtractor LONG = new LongExtractor();
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public List extract(ResultSet rs, Table table) throws SQLException {
 		ArrayList list = new ArrayList();
 		while (rs.next()) {

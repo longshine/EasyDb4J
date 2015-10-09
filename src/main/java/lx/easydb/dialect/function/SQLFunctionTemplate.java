@@ -20,7 +20,7 @@ public class SQLFunctionTemplate implements ISQLFunction {
 		this.hasParenthesesIfNoArgs = hasParenthesesIfNoArgs;
 	}
 
-	public String render(int argumentType, List args, IConnectionFactory factory) {
+	public String render(int argumentType, @SuppressWarnings("rawtypes") List args, IConnectionFactory factory) {
 		return renderer.render(args, factory);
 	}
 	

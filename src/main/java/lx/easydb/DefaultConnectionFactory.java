@@ -15,6 +15,7 @@ import lx.easydb.mapping.Mapping;
  * @author smeshlink
  *
  */
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class DefaultConnectionFactory implements IConnectionFactory {
 	private static final ReflectiveBinder reflectiveBinder = new ReflectiveBinder();
 	private static final ReflectiveExtractor reflectiveExtractor = new ReflectiveExtractor();

@@ -69,7 +69,7 @@ public class VarArgsSQLFunction implements ISQLFunction {
 		return registeredType == Types.EMPTY ? firstArgumentType : registeredType;
 	}
 
-	public String render(int firstArgumentType, List arguments, IConnectionFactory factory) {
+	public String render(int firstArgumentType, @SuppressWarnings("rawtypes") List arguments, IConnectionFactory factory) {
 		StringBuffer buf = new StringBuffer().append(begin);
 		for (int i = 0; i < arguments.size(); i++) {
 			buf.append(transformArgument((String) arguments.get(i)));

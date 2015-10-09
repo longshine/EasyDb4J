@@ -52,6 +52,7 @@ public class UniqueKey extends Constraint {
 		if (dialect.supportsNullableUnique())
             return true;
 
+		@SuppressWarnings("rawtypes")
 		Iterator it = getColumns().iterator();
 		while (it.hasNext()) {
 			Column column = (Column) it.next();
@@ -62,11 +63,11 @@ public class UniqueKey extends Constraint {
         return true;
     }
 	
-	private boolean appendColumns(StringBuffer sb, Dialect dialect)
-    {
+	private boolean appendColumns(StringBuffer sb, Dialect dialect) {
 		boolean hadNullableColumn = false;
 		
 		boolean append = false;
+		@SuppressWarnings("rawtypes")
 		Iterator it = getColumns().iterator();
 		while (it.hasNext()) {
 			if (append)

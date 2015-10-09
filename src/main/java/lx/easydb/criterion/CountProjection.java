@@ -27,6 +27,7 @@ public class CountProjection extends AggregateProjection {
             return super.toString();
 	}
 	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public List buildFunctionParameterList(ICriteria criteria) {
 		List list = new ArrayList();
 		if (distinct)

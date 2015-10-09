@@ -38,7 +38,7 @@ public class StandardSQLFunction implements ISQLFunction {
 		return registeredType == Types.EMPTY ? firstArgumentType : registeredType;
 	}
 
-	public String render(int firstArgumentType, List arguments, IConnectionFactory factory) {
+	public String render(int firstArgumentType, @SuppressWarnings("rawtypes") List arguments, IConnectionFactory factory) {
 		return doRender(firstArgumentType, arguments, factory);
 	}
 
@@ -46,7 +46,7 @@ public class StandardSQLFunction implements ISQLFunction {
 		return name;
 	}
 	
-	protected String doRender(int firstArgumentType, List arguments, IConnectionFactory factory) {
+	protected String doRender(int firstArgumentType, @SuppressWarnings("rawtypes") List arguments, IConnectionFactory factory) {
 		StringBuffer buf = new StringBuffer();
 		buf.append(name).append('(');
 		for (int i = 0; i < arguments.size(); i++) {

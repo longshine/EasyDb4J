@@ -35,6 +35,7 @@ public class PrimaryKey extends Constraint {
 	
 	private StringBuffer appendColumns(StringBuffer sb, Dialect dialect) {
 		boolean append = false;
+		@SuppressWarnings("rawtypes")
 		Iterator it = getColumns().iterator();
 		while (it.hasNext()) {
 			if (append)

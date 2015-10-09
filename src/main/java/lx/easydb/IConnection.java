@@ -25,6 +25,7 @@ import lx.easydb.mapping.Table;
  * @author Long
  *
  */
+@SuppressWarnings("rawtypes")
 public interface IConnection extends Connection {
 	/**
 	 * Gets the underlying associated {@link Connection}.
@@ -339,6 +340,7 @@ public interface IConnection extends Connection {
 	ICriteria createCriteria(Class clazz);
 }
 
+@SuppressWarnings({ "rawtypes", "unchecked" })
 class ConnectionWrapper implements IConnection {
 	private Connection connection;
 	private IConnectionFactory factory;
@@ -1127,11 +1129,12 @@ class ResultSetWrapper implements ResultSet {
 		this.st = st;
 	}
 
-	public Object unwrap(Class iface) throws SQLException {
+	@SuppressWarnings("unchecked")
+	public Object unwrap(@SuppressWarnings("rawtypes") Class iface) throws SQLException {
 		return rs.unwrap(iface);
 	}
 
-	public boolean isWrapperFor(Class iface) throws SQLException {
+	public boolean isWrapperFor(@SuppressWarnings("rawtypes") Class iface) throws SQLException {
 		return rs.isWrapperFor(iface);
 	}
 
@@ -1618,7 +1621,8 @@ class ResultSetWrapper implements ResultSet {
 		return rs.getStatement();
 	}
 
-	public Object getObject(int columnIndex, Map map) throws SQLException {
+	@SuppressWarnings("unchecked")
+	public Object getObject(int columnIndex, @SuppressWarnings("rawtypes") Map map) throws SQLException {
 		return rs.getObject(columnIndex, map);
 	}
 
@@ -1638,7 +1642,8 @@ class ResultSetWrapper implements ResultSet {
 		return rs.getArray(columnIndex);
 	}
 
-	public Object getObject(String columnLabel, Map map) throws SQLException {
+	@SuppressWarnings("unchecked")
+	public Object getObject(String columnLabel, @SuppressWarnings("rawtypes") Map map) throws SQLException {
 		return rs.getObject(columnLabel, map);
 	}
 
@@ -1947,13 +1952,15 @@ class ResultSetWrapper implements ResultSet {
 		rs.updateNClob(columnLabel, reader);
 	}
 
-	public Object getObject(int columnIndex, Class type) throws SQLException {
+	@SuppressWarnings("unchecked")
+	public Object getObject(int columnIndex, @SuppressWarnings("rawtypes") Class type) throws SQLException {
 		return ReflectHelper.invokeSilent(rs, "getObject",
 				new Class[] { int.class, Class.class },
 				new Object[] { new Integer(columnIndex), type });
 	}
 
-	public Object getObject(String columnLabel, Class type) throws SQLException {
+	@SuppressWarnings("unchecked")
+	public Object getObject(String columnLabel, @SuppressWarnings("rawtypes") Class type) throws SQLException {
 		return ReflectHelper.invokeSilent(rs, "getObject",
 				new Class[] { String.class, Class.class },
 				new Object[] { columnLabel, type });

@@ -21,7 +21,8 @@ import lx.easydb.mapping.Table;
  *
  */
 public class ReflectiveExtractor implements ValueExtractor {
-	
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public List extract(ResultSet rs, Table table) throws SQLException {
 		ArrayList list = new ArrayList();
 		ResultSetMetaData rsmd = rs.getMetaData();
@@ -122,7 +123,8 @@ public class ReflectiveExtractor implements ValueExtractor {
 			}
 		}
 	}
-	
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected Object newInstance(Table table) throws QueryException {
 		try {
 			Constructor c = table.getEntityClass().getConstructor(ReflectHelper.EMPTY_CLASSES);

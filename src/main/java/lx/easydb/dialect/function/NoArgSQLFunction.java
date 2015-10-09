@@ -32,7 +32,7 @@ public class NoArgSQLFunction implements ISQLFunction {
         return returnType;
     }
 
-	public String render(int argumentType, List args, IConnectionFactory factory)
+	public String render(int argumentType, @SuppressWarnings("rawtypes") List args, IConnectionFactory factory)
 			throws QueryException {
 		if (args.size() > 0) {
 			throw new QueryException("function takes no arguments: " + name);

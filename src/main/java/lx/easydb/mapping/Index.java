@@ -30,6 +30,7 @@ public class Index extends RelationalModel implements IRelationalModel {
         return getClass().getName() + "(" + name + ")";
     }
 	
+	@SuppressWarnings("rawtypes")
 	protected static String buildSqlCreateIndexString(Dialect dialect, String name, Table table, List columns, boolean unique, String defaultCatalog, String defaultSchema) {
         String tableQualifiedName = table.getQualifiedName(dialect, defaultCatalog, defaultSchema);
         StringBuffer sb = StringHelper.createBuilder()

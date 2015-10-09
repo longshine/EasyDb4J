@@ -10,6 +10,7 @@ public class TemplateRenderer {
 	private final String[] chunks;
 	private final int[] paramIndexes;
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public TemplateRenderer(String template) {
 		this.template = template;
 
@@ -60,7 +61,7 @@ public class TemplateRenderer {
 		return paramIndexes.length;
 	}
 
-	public String render(List args, IConnectionFactory factory) {
+	public String render(@SuppressWarnings("rawtypes") List args, IConnectionFactory factory) {
 		int numberOfArguments = args.size();
 		if (getAnticipatedNumberOfArguments() > 0 && numberOfArguments != getAnticipatedNumberOfArguments()) {
 			// log.warn(

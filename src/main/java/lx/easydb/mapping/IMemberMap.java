@@ -9,6 +9,7 @@ import java.lang.reflect.Method;
  */
 public interface IMemberMap {
 	String getColumnName();
+	@SuppressWarnings("rawtypes")
 	Class getMemberType();
 	Field getField();
 	Method getGetter();
@@ -43,6 +44,7 @@ class SimpleMemberMap implements IMemberMap {
 		return field;
 	}
 
+	@SuppressWarnings("rawtypes")
 	public Class getMemberType() {
 		return field.getType();
 	}

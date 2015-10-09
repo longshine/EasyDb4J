@@ -22,6 +22,7 @@ public interface ValueExtractor {
 	 * @return a list of objects
 	 * @throws SQLException
 	 */
+	@SuppressWarnings("rawtypes")
 	List extract(ResultSet rs, Table table) throws SQLException;
 	/**
 	 * Reads a property mapped by <code>column</code> from a {@link ResultSet}
