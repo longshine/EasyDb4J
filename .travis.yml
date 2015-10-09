@@ -4,3 +4,6 @@ jdk:
   - oraclejdk7
   - openjdk6
   - openjdk7
+
+before_install:
+  - mysql -e "create database IF NOT EXISTS test;" -uroot
